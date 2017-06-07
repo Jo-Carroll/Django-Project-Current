@@ -1,0 +1,45 @@
+{% extends "polls/base.html" %}
+
+{% block title %}
+{{ section.title }}
+{% endblock %}
+
+
+{% block script1 %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+Get the query sting here, pass it to my python 
+code in the script below to be parsed!!!<br><br>
+{{request.build_absolute_uri}}
+
+<script>
+  var thing = request.build_absolute_uri
+  var thang = "variable testing..."
+  console.log(thing)
+    function foo() {
+      
+      var data = $.getJSON( "/status", function(data) 
+      {
+        console.log(data);
+        document.getElementById("distance").innerHTML = data.distance;
+        document.getElementById("signal").innerHTML = data.signal;
+        document.getElementById("hostname").innerHTML = data.hostname;
+      });
+    }
+    window.onload = foo;
+
+</script>
+
+<h3>Customer Name: </h3>
+<div id="hostname" name="dev"></div> 
+
+<h3>Distance from Tower: </h3>
+<div id="distance" name="dev"></div> 
+
+<h3>Signal Strength: </h3>
+<div id="signal" name="dev"></div> 
+
+{% endblock script1 %}
+
+

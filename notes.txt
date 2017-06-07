@@ -1,0 +1,71 @@
+Need a javascript to serve up the data, which it gets from the status.cgi page
+this javascript will parse the data to clean it up,
+it will add some conversational tips and hints concerning how to 
+    interpret the data, depending on the data (<70 is a good signal strength)
+
+Problems: 
+How to get the data to be updated synchronously with the status.cgi page
+
+javascript callbacks?
+
+use a js callback function to synchronize the displayed page to the online data
+
+django return xml
+
+requests
+
+jsonrequests
+
+finally figured out how to #1: Authenticate to the CPE, #2 return the json status.cgi
+
+now the trick is to properly shove that python script into django and use some 
+    kind of ajax to refresh it constantly
+
+Firstly, I am going to clean up the return so index uses templates
+
+http://10.1.85.29/161111.1236/status.cgi
+
+the question now is how to pass the data from my status view to my template (base.html)
+
+the data is returned as a jsonny dictionary. Where is it returned to? well,
+    when the current url is ".../status", the only thing displayed on that page
+    will be that json dictionary. Except that json dictionary needs to be routed 
+    to my api.(?) The api will parse the data???? 
+
+why is ajax not working?
+
+in the python code in views file, I am trying to manupilate the json object (c) to return only 
+select values for keys in the json file.
+
+my views python should return a smaller json object. Which my javascript in index.html will
+manipulate even more.
+
+got it. Now I need to figure out how to display multiple pieces of information from that json
+object that was returned to my index script by my views python.
+I need to use javascript to return several different values associated
+with keys in that json object.
+
+got that firugerd out. now I need to figure our how to do an IP search to obtain that page. 
+Here's how it will work: User opens app, is greeted by search box in which to put an IP address.
+after entering a valid IP address, the user is taken to the main app page. 
+I will grab that IP address that the user enters and store it in a variable that I use in
+my views python to take me to the CPE info for the correct CPE
+
+login with /main view, parse query string to get IP address, 
+use that IP address to format the url that python is requesting 
+json data from 
+
+OR 
+
+Use an HTML form to put the IP address into a variable which will 
+then be used to format the url that pythom requests uses to look for json data\
+
+Except you can't put html form values into a variable... kick ass.
+Must parse query string. yay
+
+Oh wait, my python inviews can't access the query string on the current server page! nice
+
+or can it...  (beautifulsoup?)
+
+
+

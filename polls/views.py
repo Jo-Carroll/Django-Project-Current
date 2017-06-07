@@ -22,17 +22,17 @@ def main(request):
 
 
 def status(request):
-    urlvar = "10.1.85.29"
+    urlvar = "10.1.85.29" #insert variable gotten from js here
     loginurl = "http://{0}/login.cgi".format(urlvar)
     statusurl = "http://{0}/status.cgi".format(urlvar)
-    auth = {'username': (None, 'ubnt'), 'password': (None, 'access')}
+    auth = {'username': (None, 'ubnt'), 'password': (None, 'access')} #authenticate page
     get1 = requests.get(loginurl)
     post = requests.post(loginurl, files = auth, cookies = get1.cookies)
     get2 = requests.get(statusurl, cookies = get1.cookies)
-    cont = get2.content
-    co = get2.cookies
-    json2Dict = json.loads(cont)
-    wireless = json2Dict["wireless"]
+    cont = get2.content # return the contents of the page (json)
+    co = get2.cookies #irrelevant
+    json2Dict = json.loads(cont) #format the contents as a json object
+    wireless = json2Dict["wireless"] #get specific elements from the json 
     host = json2Dict["host"]
     myKey = {}
 

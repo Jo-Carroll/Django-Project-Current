@@ -11,11 +11,9 @@
 
 Get the query sting here, pass it to my python 
 code in the script below to be parsed!!!<br><br>
-{{request.build_absolute_uri}}
 
 <script>
-  var thing = request.build_absolute_uri
-  var thang = "variable testing..."
+  var thing = window.location.href
   console.log(thing)
     function foo() {
       

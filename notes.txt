@@ -69,3 +69,27 @@ or can it...  (beautifulsoup?)
 
 
 
+Hey Sam, I am working on a Django project at my summer internship as a side thing, 
+and I kind of ran into a little snag that I have having a grand ole time trying to 
+get past. The idea is to get elements of a live json file (live as in produced by a
+cgi script on a server) and use ajax to display it dynamically. This data 
+represents the quality of a customer's wireless internet connection. (We 
+provide wireless internet service to customers in rural areas). The device
+that collects connection quality data is called a CPE, I am making an app
+for the after hours support people so they can see a few elements of this
+data, without having to log into the CPE (don't want to give out credentials).
+So I will use the IP address to find the customer specific CPE. If I type the 
+10.(...) ip address into a browser on the company network, the CPE info page 
+comes up. Okay all that to say, I am having trouble with the "search by IP" 
+part. I capture the IP address in an HTML form and send it in the query string
+to another page which runs js which runs a python script to use that IP address
+to log in (using requests library), authenticating and everything. How would you 
+go about getting the IP address (in query string) to my python script? Is there 
+maybe a way to pass a variable to python from the js that calls that python function? 
+Screenshots below: (sorry didn't realize this would take so long to explain)
+
+Hey Sam, I am working on a Django project at my summer internship as a side thing, and I kind of ran into a little snag that I have having a grand ole time trying to get past. The idea is to get elements of a live json file (live as in produced by a cgi script on a server) and use ajax to display it dynamically. This data represents the quality of a customer's wireless internet connection. (We provide wireless internet service to customers in rural areas). The device that collects connection quality data is called a CPE, I am making an app for the after hours support people so they can see a few elements of this data, without having to log into the CPE (don't want to give out credentials). So I will use the IP address to find the customer specific CPE. If I type the 10.(...) ip address into a browser on the company network, the CPE info page comes up. Okay all that to say, I am having trouble with the "search by IP" part. I capture the IP address in an HTML form and send it in the query string to another page which runs js which runs a python script to use that IP address to log in (using requests library), authenticating and everything. How would you go about getting the IP address (in query string) to my python script? Is there maybe a way to pass a variable to python from the js that calls that python function? Screenshots below: (sorry didn't realize this would take so long to explain)
+
+
+Finally figured out how to put the current url into a js variable. Now
+I just need to return it to python

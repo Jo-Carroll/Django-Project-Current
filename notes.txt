@@ -93,3 +93,5 @@ Hey Sam, I am working on a Django project at my summer internship as a side thin
 
 Finally figured out how to put the current url into a js variable. Now
 I just need to return it to python
+
+

@@ -19,9 +19,12 @@ def main(request):
 
     }
     return HttpResponse(template.render(context,request))
+    
 
-
-def status(request):
+def status(request, my_var):
+    o = urlparse(my_var).params
+    print(my_var)
+    print(o)
     urlvar = "10.1.85.29" #insert variable gotten from js here
     loginurl = "http://{0}/login.cgi".format(urlvar)
     statusurl = "http://{0}/status.cgi".format(urlvar)

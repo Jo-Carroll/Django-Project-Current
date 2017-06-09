@@ -25,7 +25,6 @@ urlpatterns = [
     url(r'^status/', polls.views.status, name='status'),
     url(r'^main/', polls.views.main, name='main'),
 
-
 ]
 
 

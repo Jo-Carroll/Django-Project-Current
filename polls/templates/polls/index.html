@@ -8,17 +8,16 @@
 {% block script1 %}
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-Get the query sting here, pass it to my python 
-code in the script below to be parsed!!!<br><br>
+Below we are parsing the query string for the IP address you gave us in the previous page,
+and using that IP address to look up the right CPE manager on the back end. <br><br>
 
 <script>
-  var thing = window.location.href
-  console.log(thing)
+
   
     function foo() {
-      
-      var data = $.getJSON( "/status", function(data) 
+      var my_var = new URLSearchParams(window.location.search);
+        console.log(my_var.toString())
+      var data = $.get( "/status" + my_var + '/', function(data) 
       {
         console.log(data);
         document.getElementById("distance").innerHTML = data.distance;
@@ -26,7 +25,8 @@ code in the script below to be parsed!!!<br><br>
         document.getElementById("hostname").innerHTML = data.hostname;
       });
     }
-    window.onload = foo;
+      window.onload = foo;
+
 
 </script>
 
@@ -41,4 +41,29 @@ code in the script below to be parsed!!!<br><br>
 
 {% endblock script1 %}
 
+{% block testscript%}
+<script type="text/javascript">
+    $(document).ready(function() {
+        var url = data.result.docs[i].source.enriched.url.url;
+        var my_var = new URLSearchParams(window.location.search);
+        $window.onload(function() {
+            $.ajax({
+                url: "/status",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    url: my_var,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                success : function(json) {
+                    alert("Successfully sent the URL to Django");
+                },
+                error : function(xhr,errmsg,err) {
+                    alert("Could not send URL to Django. Error: " + xhr.status + ": " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+{% endblock testscript%}
 

@@ -13,19 +13,37 @@ and using that IP address to look up the right CPE manager on the back end. <br>
 
 <script>
 
+
+   $(function() {
+    startRefresh();
+    });
+
+function startRefresh() {
+    setTimeout(startRefresh,10000);
+   foo();
+    };
+
+
   
     function foo() {
-      var my_var = new URLSearchParams(window.location.search);
-        console.log(my_var.toString())
-      var data = $.get( "/status" + my_var + '/', function(data) 
-      {
+      
+      var data = $.ajax(
+        {url:"/status/",
+        type: "GET",
+        data: {IP: new URLSearchParams(window.location.search).get("IP")},
+        beforeSend: function(data, settings) {
+          console.log(data, settings);
+
+        },
+        success: function(data){
+
+        
         console.log(data);
-        document.getElementById("distance").innerHTML = data.distance;
-        document.getElementById("signal").innerHTML = data.signal;
+        document.getElementById("distance").innerHTML = data.distance + ' feet';
+        document.getElementById("signal").innerHTML = data.signal +' (Need to keep this below 70)';
         document.getElementById("hostname").innerHTML = data.hostname;
-      });
+      }});
     }
-      window.onload = foo;
 
 
 </script>
@@ -41,29 +59,10 @@ and using that IP address to look up the right CPE manager on the back end. <br>
 
 {% endblock script1 %}
 
-{% block testscript%}
-<script type="text/javascript">
-    $(document).ready(function() {
-        var url = data.result.docs[i].source.enriched.url.url;
-        var my_var = new URLSearchParams(window.location.search);
-        $window.onload(function() {
-            $.ajax({
-                url: "/status",
-                type: "POST",
-                dataType: "json",
-                data: {
-                    url: my_var,
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                    },
-                success : function(json) {
-                    alert("Successfully sent the URL to Django");
-                },
-                error : function(xhr,errmsg,err) {
-                    alert("Could not send URL to Django. Error: " + xhr.status + ": " + xhr.responseText);
-                }
-            });
-        });
-    });
-</script>
-{% endblock testscript%}
+
+
+
+
+
+
 

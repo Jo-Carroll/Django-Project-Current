@@ -4,6 +4,8 @@ from django.template import loader
 import requests
 import json
 from urllib.parse import urlparse
+from .models import Temp
+
 
 def index(request):
     template = loader.get_template('polls/index.html')
@@ -21,11 +23,16 @@ def main(request):
     return HttpResponse(template.render(context,request))
     
 
-def status(request, my_var):
-    o = urlparse(my_var).params
-    print(my_var)
-    print(o)
-    urlvar = "10.1.85.29" #insert variable gotten from js here
+def status(request):
+    if request.method == 'GET':
+        IP = request.GET.get('IP')
+        print(IP)
+
+        #Temp.objects.create(
+         #   IP = IP
+       # )
+
+    urlvar = IP #insert variable gotten from js here
     loginurl = "http://{0}/login.cgi".format(urlvar)
     statusurl = "http://{0}/status.cgi".format(urlvar)
     auth = {'username': (None, 'ubnt'), 'password': (None, 'access')} #authenticate page
@@ -37,6 +44,7 @@ def status(request, my_var):
     json2Dict = json.loads(cont) #format the contents as a json object
     wireless = json2Dict["wireless"] #get specific elements from the json 
     host = json2Dict["host"]
+    global myKey
     myKey = {}
 
     for key, value in wireless.items():

@@ -51,7 +51,6 @@ function baz() {
         beforeSend: function(data, settings) {
         },
         success: function(data){
-            console.log(data)
         document.getElementById("uptime").innerHTML = "It has been: " + data.uptime + " years since the CPE was last powercycled";
         
       }});
@@ -67,7 +66,6 @@ function baz() {
 
 
 {% endblock script1 %}
-
 
 
 {% block graphs %}
@@ -88,11 +86,12 @@ function baz() {
  
 <!-- CSS -->
 <style type="text/css">
-#flotcontainer {
+#placeholder1 {
     width: 600px;
     height: 200px;
     text-align: center;
     margin: 0 auto;
+    
 }
 </style>
  
@@ -118,7 +117,7 @@ $(document).ready(function(){  
     var dataLarge1 = generateSeries(0);
     var dataLarge2 = generateSeries(300);  
      
-    $.plot($("#placeholder"),
+    $.plot($("#placeholder1"),
         [
             {label: "RX", data: dataLarge1},
             {label: "TX", data: dataLarge2}
@@ -138,8 +137,12 @@ $(document).ready(function(){  
  
 });
 </script>
+
  
 <!-- HTML -->
-<div id="placeholder" style="height: 200px; width: 400px; padding: 0px; position: fixed ;"></div>
+<div id="placeholder1" style="height: 300px; width: 600px; padding: 0px; position: absolute; left: 50px; bottom: 50px ;"></div>
+
+<!--div id="placeholder2" style="height: 200px; width: 400px; padding: 0px; position: absolute; right: 0px; bottom: 0px ;"--></div>
+
 {% endblock graphs%}
 

@@ -138,4 +138,8 @@ the data for the graphs does not seem to be coming from the status.cgi page...
  conditional formatting:
  signal strength; if it is above 70, give red text. if it is between
  60 and 70, give then 1/3 bars. between 55-60, 2/3 bars. Between 40-55, 3/3 bars
+
+ import all correct flot libraries
+ use imported flot libraries to make an example graph
+ plug my ajax data into the flot code
  

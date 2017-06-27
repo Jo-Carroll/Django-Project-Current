@@ -42,7 +42,7 @@ def status(request):
     cputotal = int(host["cputotal"])
     cpubusy = int(host["cpubusy"])
     cpu = cpubusy / cputotal
-    print(cpu)
+
 
     for key, value in wireless.items():
         if key == "distance":
@@ -52,7 +52,6 @@ def status(request):
                 myKey[key] = str(value) + " (Good signal) "
             else:
                 myKey[key] = str(value) + " (Bad signal) "
-            print(myKey)
 
     for key, value in host.items():
         if key == "hostname":
@@ -74,7 +73,6 @@ def rates(request):
     myKey = {}
     myKey["uptime"] = host["uptime"]
 
-    print(myKey)
     #check the uptime and return a bool and/or a string (add that to myKey)
 
     return JsonResponse(myKey)

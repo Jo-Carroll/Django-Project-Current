@@ -1,5 +1,8 @@
 {% extends "polls/base.html" %}
 
+{% load static %}
+
+
 {% block title %}
 {{ section.title }}
 {% endblock %}
@@ -8,8 +11,7 @@
 {% block script1 %}
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-Below we are parsing the query string for the IP address you gave us in the previous page,
-and using that IP address to look up the right CPE manager on the back end. <br><br>
+
 
 <script>
 
@@ -19,12 +21,11 @@ and using that IP address to look up the right CPE manager on the back end. <br>
     });
 
 function startRefresh() {
-    setTimeout(startRefresh,10000);
-   foo();
+      setTimeout(startRefresh,5000);
+      foo();
+      baz();
     };
 
-
-  
     function foo() {
       
       var data = $.ajax(
@@ -32,37 +33,113 @@ function startRefresh() {
         type: "GET",
         data: {IP: new URLSearchParams(window.location.search).get("IP")},
         beforeSend: function(data, settings) {
-          console.log(data, settings);
-
         },
         success: function(data){
 
+        document.getElementById("distance").innerHTML = "Distance from tower: " + data.distance + " lightyears";
+        document.getElementById("signal").innerHTML = "Signal Strength: " + data.signal;
+        document.getElementById("hostname").innerHTML = "Customer Name: " + data.hostname;
         
-        console.log(data);
-        document.getElementById("distance").innerHTML = data.distance + ' feet';
-        document.getElementById("signal").innerHTML = data.signal +' (Need to keep this below 70)';
-        document.getElementById("hostname").innerHTML = data.hostname;
       }});
     }
-
-
+function baz() {
+      
+      var data = $.ajax(
+        {url:"/rates/",
+        type: "GET",
+        data: {IP: new URLSearchParams(window.location.search).get("IP")},
+        beforeSend: function(data, settings) {
+        },
+        success: function(data){
+            console.log(data)
+        document.getElementById("uptime").innerHTML = "It has been: " + data.uptime + " years since the CPE was last powercycled";
+        
+      }});
+    }
 </script>
 
-<h3>Customer Name: </h3>
-<div id="hostname" name="dev"></div> 
+<div1 id="hostname" name="dev">Loading...</div1> 
+<div2 id="distance" name="dev">Loading...</div2> 
+<div3 id="signal"   name="dev">Loading...</div3> 
+<div4 id="uptime"   name="dev">Loading...</div4> 
+ 
 
-<h3>Distance from Tower: </h3>
-<div id="distance" name="dev"></div> 
 
-<h3>Signal Strength: </h3>
-<div id="signal" name="dev"></div> 
 
 {% endblock script1 %}
 
 
 
+{% block graphs %}
 
 
 
+<!--script src="/js/lib/jquery-1.8.3.min.js"></script-->  
+<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/js/flot/excanvas.min.js"></script><![endif]-->
+  
+<script src="{% static 'flot/jquery.flot.min.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.time.js' %}"></script>    
+<script src="{% static 'flot/jquery.flot.symbol.js' %}"></script>
 
+    
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="{% static 'flot/excanvas.min.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.min.js' %}"></script>
+ 
+<!-- CSS -->
+<style type="text/css">
+#flotcontainer {
+    width: 600px;
+    height: 200px;
+    text-align: center;
+    margin: 0 auto;
+}
+</style>
+ 
+ 
+<!-- Javascript -->
+<script type="text/javascript">
+function generateSeries(added){
+    var data = [];
+    var start = 100 + added;
+    var end = 200 + added;
+ 
+    for(i=1;i<=200;i++){        
+        var d = Math.floor(Math.random() * (end - start + 1) + start);        
+        data.push([i, d]);
+        start++;
+        end++;
+    }
+ 
+    return data;
+}
+ 
+$(document).ready(function(){   
+    var dataLarge1 = generateSeries(0);
+    var dataLarge2 = generateSeries(300);  
+     
+    $.plot($("#placeholder"),
+        [
+            {label: "RX", data: dataLarge1},
+            {label: "TX", data: dataLarge2}
+        ],
+        {            
+            grid: {
+                backgroundColor: { colors: ["#D1D1D1", "#7A7A7A"] }
+            },
+            xaxis: {
+                ticks: 20
+            },
+            yaxis: {
+                ticks: 10
+            }
+        }
+    );
+ 
+});
+</script>
+ 
+<!-- HTML -->
+<div id="placeholder" style="height: 200px; width: 400px; padding: 0px; position: fixed ;"></div>
+{% endblock graphs%}
 

@@ -1,22 +1,79 @@
+{% load static %}
 
-<!DOCTYPE html>
-<html>
+<style>
+img {
+	width:50%;
+	height:auto;
+	margin:120px 150px 10px 230px;
+}
+div1 {
+    font-family: Verdana;
+    border: 5px solid yellowgreen;
+    border-radius: 10px;
+    margin:0 auto;
+    height: 300px;
+    width: 100%;
+    display: flex;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+}
+div2 {
 
+    font-family: Verdana;
+    height: 350px;
+    width: 100%;
+    display: flex;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+}
+div3 {
+
+    font-family: Verdana;
+    height: 400;
+    width: 100%;
+    display: flex;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+}
+div4 {
+   
+    font-family: Verdana;
+    height: 450;
+    width: 100%;
+    display: flex;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+}
+
+</style>
 <head>
-    <title>CPE Information</title>
+    <title>CPE Info:</title>
+    <link rel="icon" href="{% static 'doge.png' %}">
 </head>
 
 
-<body onload="foo();">
+<body>
+
+<img src="{% static 'SPlogo.jpg' %}" />
+
+
 
 {% block content %}
 {% endblock %}
 
+<!-- <script type="text/javascript" src="/displayinfo.js"></script>-->
+
 {% block script1 %}
 {% endblock %}
 
-{% block testscript%}
-{% endblock testscript%}
+{% block graphs%}
+{% endblock graphs%}
+
+
 
 </body>
 </html>

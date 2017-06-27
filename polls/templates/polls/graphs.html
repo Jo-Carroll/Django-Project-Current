@@ -1,0 +1,46 @@
+{% extends "polls/base.html" %}
+
+{% load static %}
+
+{% block graphs%}
+
+<script type="text/javascript" src="jquery.flot.js"></script>
+
+<div id='chart1' style='width:400px;height:300px;'></div>
+<script>
+var series1 = [ [0,0], [1,1], [2,2], [3,3], [4,4] ];
+var series2 = [ [0,4], [1,3], [2,2], [3,1], [4,0] ];
+ 
+var data = [ series1, series2 ];
+
+$.plot($("#chart1"), data);
+
+var series1 = {
+            label: "series 1",
+            data: [ [0,0], [1,1], [2,2], [3,3], [4,4] ],
+            color: "#ff0000",
+            points: { show: false },
+            lines: { show: false },
+            bars: { show: true },
+            yaxis: 1
+            };
+var series2 = {
+            label: "series 2",
+            data: [ [0,4], [1,3], [2,2], [3,1], [4,0] ],
+            color: "#00ff00",
+            points: { show: true },
+            lines: { show: true },
+            yaxis: 2
+            };
+
+
+var options = {
+    legend: { show: true, position: "nw" }
+            };
+ 
+$.plot($("#chart2"), data, options);
+console.log(series2)
+
+</script>
+
+{% endblock graphs%}

@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 from .models import Temp
 
 
+
 def index(request):
     template = loader.get_template('polls/index.html')
     context = {
@@ -48,10 +49,12 @@ def status(request):
         if key == "distance":
             myKey[key] = value
         elif key == "signal":
-            if int(value) <= 70:
-                myKey[key] = str(value) + " (Good signal) "
-            else:
+            if 65 > int(value) <= 70:
+                myKey[key] = str(value) + " (Decent signal) "
+            elif int(value) > 70:
                 myKey[key] = str(value) + " (Bad signal) "
+            elif int(value) < 65:
+                myKey[key] = str(value) + "(Most excellent"
 
     for key, value in host.items():
         if key == "hostname":
@@ -60,22 +63,28 @@ def status(request):
     return JsonResponse(myKey)
 
 def rates(request):
-    loginurl = "http://{0}/login.cgi".format(IP)
-    ratesurl =  "http://{0}/ifstats.cgi".format(IP)
-    auth = {'username': (None, 'ubnt'), 'password': (None, 'access')} #authenticate page
-    get1 = requests.get(loginurl)
-    post = requests.post(loginurl, files = auth, cookies = get1.cookies)
-    ratesDict = json.loads(requests.get(ratesurl, cookies = get1.cookies).content) #format the contents as a json object
+     if request.method == 'GET':
+        global IP
+        IP = request.GET.get('IP')
+
+        loginurl = "http://{0}/login.cgi".format(IP)
+        ratesurl =  "http://{0}/ifstats.cgi".format(IP)
+        auth = {'username': (None, 'ubnt'), 'password': (None, 'access')} #authenticate page
+        get1 = requests.get(loginurl)
+        post = requests.post(loginurl, files = auth, cookies = get1.cookies)
+        ratesDict = json.loads(requests.get(ratesurl, cookies = get1.cookies).content) #format the contents as a json object
 
 
-    host = ratesDict["host"]
-    interfaces = ratesDict["interfaces"]
-    myKey = {}
-    myKey["uptime"] = host["uptime"]
+        host = ratesDict["host"]
+        interfaces = ratesDict["interfaces"]
+        myKey = {}
+        myKey["uptime"] = int(host["uptime"])
+        myKey["RX"] = int(interfaces[1]["stats"]["rx_bytes"])
+        myKey["TX"] = int(interfaces[1]["stats"]["tx_bytes"])
 
     #check the uptime and return a bool and/or a string (add that to myKey)
 
-    return JsonResponse(myKey)
+        return JsonResponse(myKey)
 
 
 

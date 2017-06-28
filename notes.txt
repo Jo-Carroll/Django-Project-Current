@@ -142,4 +142,15 @@ the data for the graphs does not seem to be coming from the status.cgi page...
  import all correct flot libraries
  use imported flot libraries to make an example graph
  plug my ajax data into the flot code
- 
+
+ need to have an incrementally growing array of data that I am getting and saving from 
+ my ajax call to ifstats: interfaces[stats][rx_bytes]
+
+ nevermind. I will just move the graph from right to left starting blank.
+
+*********************************
+nowuptime - inituptime - window
+nowRX - initRX / window / 8 = bits/s
+nowTX - initTX / window / 8 = bits/s
+*********************************
+

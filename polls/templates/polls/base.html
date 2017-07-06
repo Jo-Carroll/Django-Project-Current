@@ -1,65 +1,42 @@
 {% load static %}
 
 <style>
-img {
-	width:50%;
-	height:auto;
-	margin:120px 150px 10px 230px;
-}
-div1 {
+
+#info {
     font-family: Verdana;
     border: 5px solid yellowgreen;
-    border-radius: 10px;
-    margin:0 auto;
+    border-radius: 5px;
     height: 300px;
-    width: 100%;
+    width: 600px;
     display: flex;
-    position: fixed;
-    align-items: center;
-    justify-content: center;
-}
-div2 {
+    vertical-align: left;
 
-    font-family: Verdana;
-    height: 350px;
-    width: 100%;
-    display: flex;
-    position: fixed;
-    align-items: center;
-    justify-content: center;
+    
 }
-div3 {
-
-    font-family: Verdana;
-    height: 400;
-    width: 100%;
-    display: flex;
-    position: fixed;
-    align-items: center;
-    justify-content: center;
+#flot-placeholder1{
+    position:absolute;
+    left: 70px;
+    bottom: 2px;
 }
-div4 {
-   
-    font-family: Verdana;
-    height: 450;
-    width: 100%;
-    display: flex;
-    position: fixed;
-    align-items: center;
+#SPlogo{
     justify-content: center;
+    position:relative; 
+    top:10px;
 }
-
 </style>
 <head>
     <title>CPE Info:</title>
+    
     <link rel="icon" href="{% static 'doge.png' %}">
+   
 </head>
 
 
 <body>
 
+<div id="SPlogo">
 <img src="{% static 'SPlogo.jpg' %}" />
-
+</div>
 
 
 {% block content %}

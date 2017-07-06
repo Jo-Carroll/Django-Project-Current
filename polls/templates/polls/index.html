@@ -47,7 +47,9 @@ function startRefresh() {
         document.getElementById("distance").innerHTML = "Distance from tower: " + data.distance + " lightyears";
         document.getElementById("signal").innerHTML = "Signal Strength: " + data.signal;
         document.getElementById("hostname").innerHTML = "Customer Name: " + data.hostname;
-        
+        console.log(data.distance)
+        console.log(data.signal)
+        console.log(data.hostname)
       }});
     }
 function baz() {
@@ -65,164 +67,135 @@ function baz() {
     }
 </script>
 
-<div1 id="hostname" name="dev">Loading...</div1> 
-<div2 id="distance" name="dev">Loading...</div2> 
-<div3 id="signal"   name="dev">Loading...</div3> 
-<div4 id="uptime"   name="dev">Loading...</div4> 
- 
-
-
+<br>
+<div id="info">
+<div1 id="hostname" name="dev">Loading...</div1> <br>
+<div2 id="distance" name="dev">Loading...</div2> <br>
+<div3 id="signal"   name="dev">Loading...</div3> <br>
+<div4 id="uptime"   name="dev">Loading...</div4> <br>
+</div>
 
 {% endblock script1 %}
 
 {% block graphs %}
 
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script src="{% static 'flot/excanvas.min.js' %}"></script>
 <script src="{% static 'flot/jquery.flot.min.js' %}"></script>
- <script src="{% static 'flot/jquery.flot.min.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.min.js' %}"></script>
 <script src="{% static 'flot/jquery.flot.time.js' %}"></script>    
 <script src="{% static 'flot/jquery.flot.symbol.js' %}"></script>
 <script src="{% static 'flot/jquery.flot.axislabels.js' %}"></script>
 
 <script>
-var data = [];
-var dataset;
+//var data = [];
+//var dataset;
 //var totalPoints = 100;
 //var updateInterval = 1000;
-var now = new Date().getTime();
-var current;
+//var now = new Date().getTime();
+
+	$(function() {
+
+		// We use an inline data source in the example, usually data would
+		// be fetched from a server
+
+		var data = [],
+			totalPoints = 300;
+        var current;
 
 
 function GetData() {
-    data.shift();
-  $.ajaxSetup({ cache: false });
 
+  $.ajaxSetup({ cache: false });
+  
         $.ajax({
         url:"/rates/",
-       // dataType: 'json',
+        dataType: 'json',
         type: "GET",
         data: {IP: new URLSearchParams(window.location.search).get("IP")},
         beforeSend: function(data, settings) {},
         success: function(jdata){
         
                 
-  if (typeof(last) == 'undefined') {
+if (typeof(last) == 'undefined') {
   last = jdata.uptime
   }
-  current = jdata.uptime - last 
-  //last = _data.uptime
-  //now += updateInterval
+current = jdata.uptime - last 
 
 if (typeof(lastTX) == 'undefined'){
     lastTX = jdata.TX
     }
-  currentTX = jdata.TX - lastTX
-  lastTX = jdata.TX
-  console.log(currentTX)
+currentTX = jdata.TX - lastTX
+
+//console.log(currentTX)
 
 
-        var temp = [jdata.uptime, currentTX];
-        data.push(temp);
-    
+var temp = [current, currentTX];
+data.push(temp);
+console.log(temp)
+return temp;
      
-if (typeof(lastRX) == 'undefined'){
-lastRX = jdata.RX
-}
-currentRX = jdata.RX - lastRX
-lastRX = jdata.RX
-//console.log(currentRX)
+//if (typeof(lastRX) == 'undefined'){
+//lastRX = jdata.RX
+//}
+//currentRX = jdata.RX - lastRX
+//lastRX = jdata.RX
+////console.log(currentRX)
+//
+//
+//    var temp = [current, currentRX];
+//    data.push(temp);
+//    
 
-
-    var temp = [jdata.uptime, currentRX];
-    data.push(temp);
-
-    },       
+    },  
+         
     });
     
 };
+var updateInterval = 30;
+		$("#updateInterval").val(updateInterval).change(function () {
+			var v = $(this).val();
+			if (v && !isNaN(+v)) {
+				updateInterval = +v;
+				if (updateInterval < 1) {
+					updateInterval = 1;
+				} else if (updateInterval > 2000) {
+					updateInterval = 2000;
+				}
+				$(this).val("" + updateInterval);
+			}
+		});
 
-       
-
-
-var options = {    //position: "sw",
+var plot = $.plot("#flot-placeholder1", [ GetData()], {
     series: {
-        lines: {
-            show: true,
-            lineWidth: 1.2,
-            fill: true
-        }
-    },
-    xaxis: {
-       min: 0,
-        max: 100,      
-//        tickSize: 5,
-//        tickFormatter: function (v, axis) {
-//            if (v % 10 == 0) {
-//                return v;
-//            } else {
-//                return "";
-//            }
-//        },
-// changed a bunch of stuff here
-
-        axisLabel: "Time",
-        axisLabelUseCanvas: true,
-        axisLabelFontSizePixels: 12,
-        axisLabelFontFamily: 'Verdana, Arial',
-        axisLabelPadding: 10
- 
+        shadowSize: 0	// Drawing is faster without shadows
     },
     yaxis: {
         min: 0,
-        max: 100,      
-        tickSize: 5,
-        tickFormatter: function (v, axis) {
-            if (v % 10 == 0) {
-                return v + "%";
-            } else {
-                return "";
-            }
-        },
-
-        axisLabel: "RX/TX values",
-        axisLabelUseCanvas: true,
-        axisLabelFontSizePixels: 12,
-        axisLabelFontFamily: 'Verdana, Arial',
-        axisLabelPadding: 6
+        max: 100
     },
-    legend: {        
-        labelBoxBorderColor: "#fff"
-    },
-    grid: {                
-        backgroundColor: "#000000",
-        tickColor: "#008040"
+    xaxis: {
+        show: false
     }
-};
-
-$(document).ready(function () {
-    GetData();
-
-    dataset = [
-        { label: "TX", data: data, color: "#00FF00" },
-        //{label: "RX", data:data, color: "#00ff00"}
-    ];
-
-    $.plot($("#flot-placeholder1"), dataset, options);
-
-    function update() {
-        GetData();
-
-        $.plot($("#flot-placeholder1"), dataset, options)
-        setTimeout(update, current);
-    }
-
-    update();
 });
 
+function update() {
 
+    plot.setData([GetData()]);
+
+    // Since the axes don't change, we don't need to call plot.setupGrid()
+
+    plot.draw();
+    setTimeout(update, updateInterval);
+}
+
+update();
+
+// Add the Flot version string to the footer
+
+$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+});
 
 </script>
 <!-- HTML -->

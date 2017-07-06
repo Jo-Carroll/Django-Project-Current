@@ -43,17 +43,16 @@ def status(request):
     cputotal = int(host["cputotal"])
     cpubusy = int(host["cpubusy"])
     cpu = cpubusy / cputotal
-
-
+  
     for key, value in wireless.items():
         if key == "distance":
             myKey[key] = value
         elif key == "signal":
-            if 70 >= int(value) and int(value) > 65:
-                myKey[key] = str(value) + " (Decent signal) "
-            elif int(value) > 70:
+            if abs(int(value)) > 70:
                 myKey[key] = str(value) + " (Shitty signal) "
-            elif int(value) < 65:
+            elif 70 >= abs(int(value)) > 65:
+                myKey[key] = str(value) + " (Decent signal) "
+            elif abs(int(value)) < 65:
                 myKey[key] = str(value) + " (Most excellent) "
 
     for key, value in host.items():
@@ -79,8 +78,8 @@ def rates(request):
         interfaces = ratesDict["interfaces"]
         myKey = {}
         myKey["uptime"] = int(host["uptime"])
-        myKey["RX"] = int(interfaces[1]["stats"]["rx_bytes"]) / 8
-        myKey["TX"] = int(interfaces[1]["stats"]["tx_bytes"]) / 8
+        myKey["RX"] = int(interfaces[1]["stats"]["rx_bytes"]) * 8
+        myKey["TX"] = int(interfaces[1]["stats"]["tx_bytes"]) * 8
 
     #check the uptime and return a bool and/or a string (add that to myKey)
 

@@ -154,3 +154,21 @@ nowRX - initRX / window / 8 = bits/s
 nowTX - initTX / window / 8 = bits/s
 *********************************
 
+
+how many seconds wil the graph initialize to?
+how will I populate each second with data when I have none yet?
+It will be empty, instead of the first dataset using the whole scope of the graph
+each dataset will represent one second
+the graph should show like 20 seconds worth of data points
+the graph should not inchworm
+each second will be represented by an ordered pair (x,y)
+in that ordered pair, (x, y), temp = (now += updateInterval, y) 
+
+GetData is working. x = uptime since pageload, and y = rx data transfer rate
+the graph is not displaying correctly, however
+it is still inchworming
+
+right now I am just going to try to move the graph to the side of the page and 
+work on some other stuff
+
+

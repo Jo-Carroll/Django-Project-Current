@@ -14,7 +14,7 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script src="{% static 'flot/excanvas.min.js' %}"></script>
 <script src="{% static 'flot/jquery.flot.min.js' %}"></script>
- <script src="{% static 'flot/jquery.flot.min.js' %}"></script>
+<script src="{% static 'flot/jquery.flot.min.js' %}"></script>
 <script src="{% static 'flot/jquery.flot.time.js' %}"></script>    
 <script src="{% static 'flot/jquery.flot.symbol.js' %}"></script>
 <script src="{% static 'flot/jquery.flot.axislabels.js' %}"></script>
@@ -36,24 +36,19 @@ function startRefresh() {
 
     function foo() {
       
-      var data = $.ajax(
-        {url:"/status/",
+      var data = $.ajax({
+        url:"/status/",
         type: "GET",
         data: {IP: new URLSearchParams(window.location.search).get("IP")},
         beforeSend: function(data, settings) {
         },
         success: function(data){
-
-        document.getElementById("distance").innerHTML = "Distance from tower: " + data.distance + " lightyears";
-        document.getElementById("signal").innerHTML = "Signal Strength: " + data.signal;
-        document.getElementById("hostname").innerHTML = "Customer Name: " + data.hostname;
-        console.log(data.distance)
-        console.log(data.signal)
-        console.log(data.hostname)
+            document.getElementById("distance").innerHTML = "Distance from tower: " + data.distance + " lightyears";
+            document.getElementById("signal").innerHTML = "Signal Strength: " + data.signal;
+            document.getElementById("hostname").innerHTML = "Customer Name: " + data.hostname;
       }});
     }
 function baz() {
-      
       var data = $.ajax(
         {url:"/rates/",
         type: "GET",
@@ -61,13 +56,11 @@ function baz() {
         beforeSend: function(data, settings) {
         },
         success: function(data){
-        document.getElementById("uptime").innerHTML = "It has been: " + data.uptime + " years since the CPE was last powercycled";
-        
+        document.getElementById("uptime").innerHTML = "It has been: " + data.uptime + " years since the CPE was last powercycled";  
       }});
     }
 </script>
 
-<br>
 <div id="info">
 <div1 id="hostname" name="dev">Loading...</div1> <br>
 <div2 id="distance" name="dev">Loading...</div2> <br>
@@ -89,71 +82,47 @@ function baz() {
 <script src="{% static 'flot/jquery.flot.axislabels.js' %}"></script>
 
 <script>
-//var data = [];
-//var dataset;
-//var totalPoints = 100;
-//var updateInterval = 1000;
-//var now = new Date().getTime();
 
-	$(function() {
 
-		// We use an inline data source in the example, usually data would
-		// be fetched from a server
+$(function() {
 
-		var data = [],
+		var data = [];
 			totalPoints = 300;
+        var currentTX;
         var current;
 
-
 function GetData() {
-
-  $.ajaxSetup({ cache: false });
-  
-        $.ajax({
-        url:"/rates/",
-        dataType: 'json',
-        type: "GET",
-        data: {IP: new URLSearchParams(window.location.search).get("IP")},
-        beforeSend: function(data, settings) {},
-        success: function(jdata){
-        
+     $.ajax({
+       url:"/rates/",
+       dataType: 'json',
+       method: "GET",
+       data: {IP: new URLSearchParams(window.location.search).get("IP")},
+       beforeSend: function(data, settings) {},
+       success: function(jdata){
                 
-if (typeof(last) == 'undefined') {
-  last = jdata.uptime
-  }
-current = jdata.uptime - last 
-
-if (typeof(lastTX) == 'undefined'){
-    lastTX = jdata.TX
-    }
-currentTX = jdata.TX - lastTX
-
-//console.log(currentTX)
-
-
-var temp = [current, currentTX];
-data.push(temp);
-console.log(temp)
-return temp;
-     
-//if (typeof(lastRX) == 'undefined'){
-//lastRX = jdata.RX
-//}
-//currentRX = jdata.RX - lastRX
-//lastRX = jdata.RX
-////console.log(currentRX)
-//
-//
-//    var temp = [current, currentRX];
-//    data.push(temp);
-//    
-
-    },  
-         
-    });
+       if (typeof(last) == 'undefined') {
+           last = jdata.uptime
+           }
+       current = jdata.uptime - last 
+       if (typeof(lastTX) == 'undefined')
+            { lastTX = jdata.TX }
+       currentTX = jdata.TX //- lastTX
     
-};
-var updateInterval = 30;
+}}); //end of ajax call
+
+    if (data.length > 0)
+        data = data.slice(1);
+    while (data.length < totalPoints) {
+        data.push(currentTX);}
+    var res = [];
+    for (var i = 0; i < data.length; ++i) {
+        res.push([current, data[i]])
+    }
+    console.log(res)
+	return res;
+}
+
+		var updateInterval = 30;
 		$("#updateInterval").val(updateInterval).change(function () {
 			var v = $(this).val();
 			if (v && !isNaN(+v)) {
@@ -167,38 +136,43 @@ var updateInterval = 30;
 			}
 		});
 
-var plot = $.plot("#flot-placeholder1", [ GetData()], {
-    series: {
-        shadowSize: 0	// Drawing is faster without shadows
-    },
-    yaxis: {
-        min: 0,
-        max: 100
-    },
-    xaxis: {
-        show: false
-    }
-});
+		var plot = $.plot("#placeholder", [ GetData() ], {
+			series: {
+				shadowSize: 0,	// Drawing is faster without shadows
+				lines: {
+					show:true,
+					linewidth:1.2,
+					fill:true
+				}
+			},
+			yaxis: {
+				min: 0,
+				max: 100
+			},
+			xaxis: {
+				show: false
+			}
+		});
 
-function update() {
+		function update() {
 
-    plot.setData([GetData()]);
+			plot.setData([GetData()]);
 
-    // Since the axes don't change, we don't need to call plot.setupGrid()
+			// Since the axes don't change, we don't need to call plot.setupGrid()
 
-    plot.draw();
-    setTimeout(update, updateInterval);
-}
+			plot.draw();
+			setTimeout(update, updateInterval);
+		}
 
-update();
+		update();
 
-// Add the Flot version string to the footer
+		// Add the Flot version string to the footer
 
-$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
-});
+		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+	});
 
 </script>
 <!-- HTML -->
-<div id="flot-placeholder1" style="width:550px;height:300px;margin:0 auto; position:absolute"></div>
+<div id="placeholder" ></div>
 {% endblock graphs%}
 

@@ -49,7 +49,7 @@ def status(request):
             myKey[key] = value
         elif key == "signal":
             if abs(int(value)) > 70:
-                myKey[key] = str(value) + " (Shitty signal) "
+                myKey[key] = str(value) + " (Bad signal) "
             elif 70 >= abs(int(value)) > 65:
                 myKey[key] = str(value) + " (Decent signal) "
             elif abs(int(value)) < 65:
@@ -78,8 +78,10 @@ def rates(request):
         interfaces = ratesDict["interfaces"]
         myKey = {}
         myKey["uptime"] = int(host["uptime"])
-        myKey["RX"] = int(interfaces[1]["stats"]["rx_bytes"]) * 8
-        myKey["TX"] = int(interfaces[1]["stats"]["tx_bytes"]) * 8
+        myKey["RX"] = int(interfaces[1]["stats"]["rx_bytes"]) * 8 /10000000
+        myKey["TX"] = int(interfaces[1]["stats"]["tx_bytes"]) * 8 /10000000
+        print(myKey["uptime"])
+        print(myKey["RX"])
 
     #check the uptime and return a bool and/or a string (add that to myKey)
 

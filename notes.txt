@@ -172,3 +172,13 @@ right now I am just going to try to move the graph to the side of the page and
 work on some other stuff
 
 
+I am getting an error message saying, "Uncaught Typeerror: Cannot read property 'data' of undefined
+
+The graph works whrn I use random data in the 'GetData function
+but not when I am using my Ajax data. I assume that this is because the Ajax data is ont in the 
+form it was expecting
+
+When I console log the random data, it is an enormous array
+when I console log my own data, it is only an ordered pair. 
+I need to plug my numbers into the random function to make them fill the array
+

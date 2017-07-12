@@ -187,8 +187,6 @@ $(document).ready(function () {
 <!-- CSS -->
 <style type="text/css">
 #placeholder1 {
-    width: 600px;
-    height: 200px;
     text-align: center;
     margin: 0 auto;
     
@@ -540,7 +538,7 @@ console.log(TXdata)
     setTimeout(GetData, updateInterval)
 }
 
- 
+
 $(document).ready(function(){   
     //getinit();
 
@@ -560,3 +558,143 @@ $(document).ready(function(){  
 <div id="placeholder1" style="height: 300px; width: 600px; padding: 0px; position: absolute; left: 50px; bottom: 50px ;"></div>
 
 <!--div id="placeholder2" style="height: 200px; width: 400px; padding: 0px; position: absolute; right: 0px; bottom: 0px ;"--></div>
+
+<script>
+	$(function() {
+
+		// We use an inline data source in the example, usually data would
+		// be fetched from a server
+
+		var data = [],
+			totalPoints = 300;
+
+		function getRandomData() {
+
+			if (data.length > 0)
+				data = data.slice(1);
+
+			// Do a random walk
+
+			while (data.length < totalPoints) {
+
+				var prev = data.length > 0 ? data[data.length - 1] : 50,
+					y = prev + Math.random() * 10 - 5;
+
+				if (y < 0) {
+					y = 0;
+				} else if (y > 100) {
+					y = 100;
+				}
+
+				data.push(y);
+			}
+
+			// Zip the generated y values with the x values
+
+			var res = [];
+			for (var i = 0; i < data.length; ++i) {
+				res.push([i, data[i]])
+			}
+
+			return res;
+		}
+
+		// Set up the control widget
+
+		var updateInterval = 30;
+		$("#updateInterval").val(updateInterval).change(function () {
+			var v = $(this).val();
+			if (v && !isNaN(+v)) {
+				updateInterval = +v;
+				if (updateInterval < 1) {
+					updateInterval = 1;
+				} else if (updateInterval > 2000) {
+					updateInterval = 2000;
+				}
+				$(this).val("" + updateInterval);
+			}
+		});
+
+		var plot = $.plot("#placeholder", [ getRandomData() ], {
+			series: {
+				shadowSize: 0	// Drawing is faster without shadows
+			},
+			yaxis: {
+				min: 0,
+				max: 100
+			},
+			xaxis: {
+				show: false
+			}
+		});
+
+		function update() {
+
+			plot.setData([getRandomData()]);
+
+			// Since the axes don't change, we don't need to call plot.setupGrid()
+
+			plot.draw();
+			setTimeout(update, updateInterval);
+		}
+
+		update();
+
+		// Add the Flot version string to the footer
+
+		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+	});
+
+
+
+
+//function GetData() {
+//
+//  $.ajaxSetup({ cache: false });
+//  
+//        $.ajax({
+//        url:"/rates/",
+//        dataType: 'json',
+//        type: "GET",
+//        data: {IP: new URLSearchParams(window.location.search).get("IP")},
+//        beforeSend: function(data, settings) {},
+//        success: function(jdata){
+//                 
+//        if (typeof(last) == 'undefined') {
+//            last = jdata.uptime
+//            }
+//        current = jdata.uptime - last 
+//
+//        if (typeof(lastTX) == 'undefined'){
+//            lastTX = jdata.TX
+//            }
+//        currentTX = jdata.TX - lastTX
+//
+//        console.log(current)
+//
+//
+//    var temp = [current, currentTX];
+//    data.push(temp);
+//    console.log(temp)
+//
+//     
+//if (typeof(lastRX) == 'undefined'){
+//lastRX = jdata.RX
+//}
+//currentRX = jdata.RX - lastRX
+//lastRX = jdata.RX
+////console.log(currentRX)
+//
+//
+//    var temp = [current, currentRX];
+//    data.push(temp);
+//    
+//    return temp;
+//    },  
+//         
+
+
+
+
+
+</script>

@@ -5,6 +5,7 @@ import requests
 import json
 from urllib.parse import urlparse
 from .models import Temp
+import re
 
 
 
@@ -43,23 +44,29 @@ def status(request):
     cputotal = int(host["cputotal"])
     cpubusy = int(host["cpubusy"])
     cpu = cpubusy / cputotal
+    print(cpu)
   
     for key, value in wireless.items():
         if key == "distance":
-            myKey[key] = value
+            myKey[key] = str(value //5280) + " miles"
         elif key == "signal":
             if abs(int(value)) > 70:
                 myKey[key] = str(value) + " (Bad signal) "
+                myKey["signalint"] = abs(int(value))
             elif 70 >= abs(int(value)) > 65:
                 myKey[key] = str(value) + " (Decent signal) "
+                myKey["signalint"] = abs(int(value))
             elif abs(int(value)) < 65:
                 myKey[key] = str(value) + " (Most excellent) "
+                myKey["signalint"] = abs(int(value))
 
     for key, value in host.items():
         if key == "hostname":
-            myKey[key] = value
+            if "SL" in value:
+             myKey[key] = value
+             myKey["package"] = "Smart Link"
 
-    return JsonResponse(myKey)
+    return JsonResponse(myKey) 
 
 def rates(request):
      if request.method == 'GET':
@@ -77,12 +84,9 @@ def rates(request):
         host = ratesDict["host"]
         interfaces = ratesDict["interfaces"]
         myKey = {}
-        myKey["uptime"] = int(host["uptime"])
+        myKey["uptime"] = int(host["uptime"]) //120
         myKey["RX"] = int(interfaces[1]["stats"]["rx_bytes"]) * 8 /10000000
         myKey["TX"] = int(interfaces[1]["stats"]["tx_bytes"]) * 8 /10000000
-        print(myKey["uptime"])
-        print(myKey["RX"])
-
     #check the uptime and return a bool and/or a string (add that to myKey)
 
         return JsonResponse(myKey)

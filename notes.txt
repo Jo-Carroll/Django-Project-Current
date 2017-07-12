@@ -182,3 +182,14 @@ When I console log the random data, it is an enormous array
 when I console log my own data, it is only an ordered pair. 
 I need to plug my numbers into the random function to make them fill the array
 
+the next step is conditional formatting in js. the goal is to look at something--
+like the signal strength, and determine if the signal strength is good or poor,
+and if it is poor, do something special. For example, maybe make the border red, 
+or put a bouncing arrow next to it. 
+
+
+I need to put up a picture of the packages. I have parsed the string in the 
+hostname to determine the type of packade the customer has, so all I need to do is, 
+tell the crc peeps what package the customer has, so they can advise on whether it
+may be a good idea to upgrade their package, as the lower end packages are not meant for 
+hd video streaming and such

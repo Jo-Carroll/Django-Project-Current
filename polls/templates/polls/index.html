@@ -43,9 +43,20 @@ function startRefresh() {
         beforeSend: function(data, settings) {
         },
         success: function(data){
-            document.getElementById("distance").innerHTML = "Distance from tower: " + data.distance + " lightyears";
+            document.getElementById("distance").innerHTML = "Distance from tower: " + data.distance;
             document.getElementById("signal").innerHTML = "Signal Strength: " + data.signal;
             document.getElementById("hostname").innerHTML = "Customer Name: " + data.hostname;
+            if (data.signalint > 70){
+                document.getElementById("signal").style.borderColor= "red";
+            }
+            else if(data.signalint < 70 && data.signalint > 65){
+                document.getElementById("signal").style.borderColor= "yellow";
+            }
+            else if(data.signalint < 65){
+                document.getElementById("signal").style.borderColor= "green";
+            }
+            document.getElementById("package").innerHTML = "Smartlink package details: 2 MB download, 0.5MB upload"
+
       }});
     }
 function baz() {
@@ -56,17 +67,38 @@ function baz() {
         beforeSend: function(data, settings) {
         },
         success: function(data){
-        document.getElementById("uptime").innerHTML = "It has been: " + data.uptime + " years since the CPE was last powercycled";  
+        document.getElementById("uptime").innerHTML = "It has been: " + data.uptime + " hours since the CPE was last powercycled";  
+        if(data.uptime > 1){
+            document.getElementById("uptime").style.borderColor= "red";
+        }
       }});
     }
+function bar() {
+    var data = $.ajax({
+        url:"/status/",
+        type: "GET",
+        data: {IP: new URLSearchParams(window.location.search).get("IP")},
+        beforeSend: function(data, settings) {
+        },
+        success: function(data){;
+            document.getElementById("package").innerHTML = "Smartlink package details: 2 MB download, 0.5MB upload"
+            if (data.package = "Smart Link"){
+                document.getElementById("package").style.borderColor= "red";
+            }
+            console.log(data.package)
+      }});
+    
+}
 </script>
 
-<div id="info">
+
 <div1 id="hostname" name="dev">Loading...</div1> <br>
 <div2 id="distance" name="dev">Loading...</div2> <br>
 <div3 id="signal"   name="dev">Loading...</div3> <br>
 <div4 id="uptime"   name="dev">Loading...</div4> <br>
-</div>
+<button type="button" onclick=bar()>Does the customer want to stream movies?</button>
+<div5 id="package"  name="dev">Loading...</div5> <br>
+
 
 {% endblock script1 %}
 
@@ -114,11 +146,12 @@ function GetData() {
         data = data.slice(1);
     while (data.length < totalPoints) {
         data.push(currentTX);}
+        
     var res = [];
     for (var i = 0; i < data.length; ++i) {
         res.push([current, data[i]])
     }
-    console.log(res)
+    //console.log(res)
 	return res;
 }
 

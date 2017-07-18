@@ -46,8 +46,6 @@ function startRefresh() {
             document.getElementById("distance").innerHTML = "Distance from tower: " + data.distance;
             document.getElementById("signal").innerHTML = "Signal Strength: " + data.signal;
             document.getElementById("hostname").innerHTML = "Customer Name: " + data.hostname;
-            console.log(data.hostname)
-            console.log(data.package)
             if (data.signalint > 70){
                 document.getElementById("signal").style.borderColor= "red";
             }
@@ -88,7 +86,6 @@ function bar() {
         beforeSend: function(data, settings) {
         },
         success: function(data){;
-        console.log(data.package)
             if (data.package = "Smart Link"){
                 document.getElementById("package").style.borderColor= "red";
                 //document.getElementById("package").innerHTML = "Smartlink package details: 2 Mb download, 0.5MB upload"
@@ -143,7 +140,6 @@ function GetData() {
        data: {IP: new URLSearchParams(window.location.search).get("IP")},
        beforeSend: function(data, settings) {},
        success: function(jdata){
-                
        if (typeof(last) == 'undefined') {
            last = jdata.uptime
            }
@@ -151,6 +147,7 @@ function GetData() {
        if (typeof(lastTX) == 'undefined')
             { lastTX = jdata.TX }
        currentTX = jdata.TX //- lastTX
+       console.log(currentTX)
     
 }}); //end of ajax call
 

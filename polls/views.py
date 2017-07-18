@@ -6,6 +6,7 @@ import json
 from urllib.parse import urlparse
 from .models import Temp
 import re
+import math
 
 
 
@@ -47,10 +48,11 @@ def status(request):
   
     for key, value in wireless.items():
         if key == "distance":
-            myKey[key] = str(value //5280) + " miles"
+            dis = value /5280 
+            myKey[key] = "About " + str(round(dis, 2)) + " miles"
         elif key == "signal":
             if abs(int(value)) > 70:
-                myKey[key] = str(value) + " (Bad signal) "
+                myKey[key] = str(value) + " (Weak signal) "
                 myKey["signalint"] = abs(int(value))
             elif 70 >= abs(int(value)) > 65:
                 myKey[key] = str(value) + " (Decent signal) "

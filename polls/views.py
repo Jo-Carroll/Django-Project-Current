@@ -44,7 +44,6 @@ def status(request):
     cputotal = int(host["cputotal"])
     cpubusy = int(host["cpubusy"])
     cpu = cpubusy / cputotal
-    print(cpu)
   
     for key, value in wireless.items():
         if key == "distance":
@@ -62,9 +61,14 @@ def status(request):
 
     for key, value in host.items():
         if key == "hostname":
+            myKey[key] = value
             if "SL" in value:
-             myKey[key] = value
-             myKey["package"] = "Smart Link"
+                myKey[key] = value
+                myKey["package"] = "Smart Link"
+            elif "EL" in value:
+                myKey[key] = value
+                myKey["package"] = "Elite Link"
+            
 
     return JsonResponse(myKey) 
 

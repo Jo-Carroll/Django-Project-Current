@@ -46,16 +46,23 @@ function startRefresh() {
             document.getElementById("distance").innerHTML = "Distance from tower: " + data.distance;
             document.getElementById("signal").innerHTML = "Signal Strength: " + data.signal;
             document.getElementById("hostname").innerHTML = "Customer Name: " + data.hostname;
+            console.log(data.hostname)
+            console.log(data.package)
             if (data.signalint > 70){
                 document.getElementById("signal").style.borderColor= "red";
             }
-            else if(data.signalint < 70 && data.signalint > 65){
+            else if(data.signalint <= 70 && data.signalint > 65){
                 document.getElementById("signal").style.borderColor= "yellow";
             }
             else if(data.signalint < 65){
                 document.getElementById("signal").style.borderColor= "green";
+            }if(data.package = "Elite Link"){
+                document.getElementById("package").innerHTML = "Elitelink package details: 3 Mb download, 0.75MB upload"
+
             }
-            document.getElementById("package").innerHTML = "Smartlink package details: 2 MB download, 0.5MB upload"
+            else if (data.package = "Smart Link"){
+                document.getElementById("package").innerHTML = "Smartlink package details: 2 Mb download, 0.5MB upload"
+            }
 
       }});
     }
@@ -81,23 +88,28 @@ function bar() {
         beforeSend: function(data, settings) {
         },
         success: function(data){;
-            document.getElementById("package").innerHTML = "Smartlink package details: 2 MB download, 0.5MB upload"
+        console.log(data.package)
             if (data.package = "Smart Link"){
                 document.getElementById("package").style.borderColor= "red";
+                //document.getElementById("package").innerHTML = "Smartlink package details: 2 Mb download, 0.5MB upload"
             }
-            console.log(data.package)
+            else if(data.package = "Elite Link"){
+                document.getElementById("package").style.borderColor= "green";
+                //document.getElementById("package").innerHTML = "Elitelink package details: 3 Mb download, 0.75MB upload"
+
+            }
       }});
     
 }
 </script>
 
 
-<div1 id="hostname" name="dev">Loading...</div1> <br>
-<div2 id="distance" name="dev">Loading...</div2> <br>
-<div3 id="signal"   name="dev">Loading...</div3> <br>
-<div4 id="uptime"   name="dev">Loading...</div4> <br>
-<button type="button" onclick=bar()>Does the customer want to stream movies?</button>
-<div5 id="package"  name="dev">Loading...</div5> <br>
+<div1 id="hostname" name="dev">Loading customer name...</div1> <br>
+<div2 id="distance" name="dev">Loading distance from tower...</div2> <br>
+<div3 id="signal"   name="dev">Loading signal strength...</div3> <br>
+<div4 id="uptime"   name="dev">Loading CPE uptime...</div4> <br>
+<button type="button" onclick=bar()>Does the customer want to stream movies?</button> <br>
+<div5 id="package"  name="dev">Loading package details...</div5> <br>
 
 
 {% endblock script1 %}

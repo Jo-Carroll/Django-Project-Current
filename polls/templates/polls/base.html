@@ -14,11 +14,12 @@
 div1 {
 
     font-family: Verdana;
+    font-size: 36;
     border: 5px solid yellowgreen;
     border-radius: 10px;
     margin-top: 100px;
     margin: auto;
-    width: 30%;
+    width: 90%;
     padding: 10px;
     display: flex;
     position: auto;
@@ -71,7 +72,6 @@ div4 {
 div5 {
 
     font-family: Verdana;
-    border: 5px solid yellowgreen;
     border-radius: 10px;
     margin-top: 100px;
     margin: auto;
@@ -108,32 +108,38 @@ button{
     position:auto; 
     top:10px;
     display: flex;
-
 }
 #main{
     font-family: Verdana;
     margin-top: 100px;
     margin: auto;
     float: left;
-    width: 45%;
+    width: 50%;
     padding: 10px;
     position: auto;
     border: 10px;
     border-right-color: black;
-
 }
 #info{
     font-family: Verdana;
     margin-top: 100px;
-    margin: auto;
+    margin: 10px;
     float: right;
     width: 45%;
+    height: auto;
     padding: 10px;
     display: flex;
     position: auto;
     align-items: center;
     justify-content: center;
 }
+#speedtest{
+    justify-content: center;
+    position:auto; 
+    top:10px;
+    display: flex;
+}
+
 </style>
 <head>
     <title>CPE Info:</title>
@@ -162,9 +168,11 @@ button{
 <div id="info">
 {% block graphs%}
 {% endblock graphs%}
+
+<!-- <iframe id="speedtest" width="100%" height="600px" frameborder="0" src="http://sandprairie.speedtestcustom.com">Speed Test</iframe> -->
+
 </div>
 
-<iframe width="100%" height="600px" frameborder="0" src="http://sandprairie.speedtestcustom.com"></iframe>
 
 </body>
 </html>

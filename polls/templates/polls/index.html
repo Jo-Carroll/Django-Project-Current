@@ -29,7 +29,7 @@
     });
 
 function startRefresh() {
-      setTimeout(startRefresh,5000);
+      setTimeout(startRefresh,60);
       foo();
       baz();
     };
@@ -53,13 +53,7 @@ function startRefresh() {
                 document.getElementById("signal").style.borderColor= "yellow";
             }
             else if(data.signalint < 65){
-                document.getElementById("signal").style.borderColor= "green";
-            }if(data.package = "Elite Link"){
-                document.getElementById("package").innerHTML = "Elitelink package details: 3 Mb download, 0.75MB upload"
-
-            }
-            else if (data.package = "Smart Link"){
-                document.getElementById("package").innerHTML = "Smartlink package details: 2 Mb download, 0.5MB upload"
+                document.getElementById("signal").style.borderColor= "green";   
             }
 
       }});
@@ -72,9 +66,12 @@ function baz() {
         beforeSend: function(data, settings) {
         },
         success: function(data){
-        document.getElementById("uptime").innerHTML = "It has been: " + data.uptime + " hours since the CPE was last powercycled";  
-        if(data.uptime > 1){
+        document.getElementById("uptime").innerHTML = "Time since last reboot: " + data.uptime;  
+        if(data.color == false){
             document.getElementById("uptime").style.borderColor= "red";
+        }
+        else if(data.color == true){
+            document.getElementById("uptime").style.borderColor= "green";
         }
       }});
     }
@@ -87,12 +84,13 @@ function bar() {
         },
         success: function(data){;
             if (data.package = "Smart Link"){
-                document.getElementById("package").style.borderColor= "red";
-                //document.getElementById("package").innerHTML = "Smartlink package details: 2 Mb download, 0.5MB upload"
+                document.getElementById("package").style.border= "5px solid red";
+                document.getElementById("package").innerHTML = "Smartlink package details: 2 Mb download, 0.5MB upload"
+                document.getElementById("package").title = "We recommend Elitelink or better for video streaming"
             }
             else if(data.package = "Elite Link"){
-                document.getElementById("package").style.borderColor= "green";
-                //document.getElementById("package").innerHTML = "Elitelink package details: 3 Mb download, 0.75MB upload"
+                document.getElementById("package").style.border = "5px solid green";
+                document.getElementById("package").innerHTML = "Elitelink package details: 3 Mb download, 0.75MB upload"
 
             }
       }});
@@ -101,12 +99,12 @@ function bar() {
 </script>
 
 
-<div1 id="hostname" name="dev">Loading customer name...</div1> <br>
-<div2 id="distance" name="dev">Loading distance from tower...</div2> <br>
-<div3 id="signal"   name="dev">Loading signal strength...</div3> <br>
-<div4 id="uptime"   name="dev">Loading CPE uptime...</div4> <br>
-<button type="button" onclick=bar()>Does the customer want to stream movies?</button> <br>
-<div5 id="package"  name="dev">Loading package details...</div5> <br>
+<div1 id="hostname" title="This is the customer's name" name="dev">Loading customer name...</div1> <br>
+<div2 id="distance" title="Distance in miles from the connected tower" name="dev">Loading distance from tower...</div2> <br>
+<div3 id="signal"   title="A good signal strength is anywhere below 70" name="dev">Loading signal strength...</div3> <br>
+<div4 id="uptime"   title="If the CPE has not been rebooted in the last 24 hours, ask them to reboot" name="dev">Loading CPE uptime...</div4> <br>
+<button type="button" title="Video streaming capability depends on the package. Smartlink (base package) customers should be recommended to upgrade their package" onclick=bar()>Does the customer want to stream movies?</button> <br>
+<div5 id="package"  name="dev"></div5> <br>
 
 
 {% endblock script1 %}
@@ -123,14 +121,42 @@ function bar() {
 <script src="{% static 'flot/jquery.flot.axislabels.js' %}"></script>
 
 <script>
-
-
 $(function() {
 
 		var data = [];
-			totalPoints = 300;
+			totalPoints = 60;
         var currentTX;
         var current;
+    function getData() {
+
+			if (data.length > 0)
+				data = data.slice(1);
+
+			// Do a random walk
+
+			while (data.length < totalPoints) {
+
+				var prev = data.length > 0 ? data[data.length - 1] : 50,
+					y = prev + Math.random() * 10 - 5;
+
+				if (y < 0) {
+					y = 0;
+				} else if (y > 100) {
+					y = 100;
+				}
+
+				data.push(y);
+			}
+
+			// Zip the generated y values with the x values
+
+			var res = [];
+			for (var i = 0; i < data.length; ++i) {
+				res.push([i, data[i]])
+			}
+            
+			return res;
+		}
 
 function GetData() {
      $.ajax({
@@ -147,7 +173,6 @@ function GetData() {
        if (typeof(lastTX) == 'undefined')
             { lastTX = jdata.TX }
        currentTX = jdata.TX //- lastTX
-       console.log(currentTX)
     
 }}); //end of ajax call
 
@@ -155,16 +180,15 @@ function GetData() {
         data = data.slice(1);
     while (data.length < totalPoints) {
         data.push(currentTX);}
-        
+
     var res = [];
     for (var i = 0; i < data.length; ++i) {
-        res.push([current, data[i]])
+        res.push([i, data[i]])
     }
-    //console.log(res)
 	return res;
 }
 
-		var updateInterval = 30;
+		var updateInterval = 300;
 		$("#updateInterval").val(updateInterval).change(function () {
 			var v = $(this).val();
 			if (v && !isNaN(+v)) {
@@ -188,8 +212,7 @@ function GetData() {
 				}
 			},
 			yaxis: {
-				min: 0,
-				max: 100
+				min: 0
 			},
 			xaxis: {
 				show: false
@@ -197,24 +220,17 @@ function GetData() {
 		});
 
 		function update() {
-
 			plot.setData([GetData()]);
-
-			// Since the axes don't change, we don't need to call plot.setupGrid()
-
 			plot.draw();
 			setTimeout(update, updateInterval);
 		}
-
 		update();
-
-		// Add the Flot version string to the footer
-
 		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
 	});
 
 </script>
 <!-- HTML -->
+
 <div id="placeholder" ></div>
 {% endblock graphs%}
 

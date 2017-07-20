@@ -85,6 +85,7 @@ def rates(request):
         interfaces = ratesDict["interfaces"]
         myKey = {}
         myKey["uptime"] = str(round(float(host["uptime"]) /120, 2)) 
+        myKey["upsec"] = str(round(float(host["uptime"]), 2))
         seconds = int(host["uptime"])
         m, s = divmod(seconds, 60)
         h, m = divmod(m, 60)
@@ -95,7 +96,8 @@ def rates(request):
         elif (seconds / 120) >= 120:
        #     myKey["uptime"] = str(round(float(host["uptime"]) /60 /60, 2)) + " hours"
              myKey["color"] = False
-        dlspeed = round(int(interfaces[1]["stats"]["rx_bytes"]), 2)
+        dlspeed = round(int(interfaces[1]["stats"]["rx_bytes"]), 2) /1000000
+        print(dlspeed)
         myKey["RX"] = dlspeed
         myKey["TX"] = int(interfaces[1]["stats"]["tx_bytes"]) * 8 /100000
     #check the uptime and return a bool and/or a string (add that to myKey)

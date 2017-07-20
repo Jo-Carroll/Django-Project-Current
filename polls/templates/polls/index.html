@@ -169,7 +169,10 @@ function GetData() {
        if (typeof(last) == 'undefined') {
            last = jdata.uptime
            }
+           //change these to jdata.upsec......
+        console.log(jdata.uptime)
        current = jdata.uptime - last 
+       //console.log(current)
        if (typeof(lastTX) == 'undefined')
             { lastTX = jdata.TX }
        currentTX = jdata.TX //- lastTX
@@ -212,7 +215,8 @@ function GetData() {
 				}
 			},
 			yaxis: {
-				min: 0
+				min: 0,
+                max: 300
 			},
 			xaxis: {
 				show: false

@@ -197,4 +197,6 @@ hd video streaming and such
 start a timer for cpuload, to determine if it is above 90% for over a minute.
 
 
-this is just words
+to accurately calculate the current "RATE" of data transfer, I need to get the 
+current bits by subtracting the difference in two ajax calls, delimited by the 
+ajax call.(to ensure that I get two different readings). Compare the current p;qaruijhtgwo9uihjtuag.yk,.

@@ -93,7 +93,6 @@ def rates(request):
        #     myKey["uptime"] = str(round(float(host["uptime"]) /60 /60, 2)) + " hours"
              myKey["color"] = False
         dlspeed = round(int(interfaces[1]["stats"]["tx_bytes"]), 2)
-        print(dlspeed)
         myKey["RX"] = dlspeed
         myKey["TX"] = dlspeed #int(interfaces[1]["stats"]["tx_bytes"]) * 8 /100000
     #check the uptime and return a bool and/or a string (add that to myKey)
@@ -103,7 +102,7 @@ def rates(request):
         return HttpResponse("The page has died")
 
 def lan(request):
-     if request.method == 'GET':
+    if request.method == 'GET':
         global IP
         IP = request.GET.get('IP')
         loginurl = "http://{0}/login.cgi".format(IP)
@@ -112,12 +111,9 @@ def lan(request):
         get1 = requests.get(loginurl)
         post = requests.post(loginurl, files = auth, cookies = get1.cookies)
         json2Dict = json.loads(requests.get(statusurl, cookies = get1.cookies).content) #format the contents as a json object
-        wireless = json2Dict["wireless"] #get specific elements from the json 
-        host = json2Dict["host"]
+        eth0 = json2Dict["interfaces"][1]["status"]["plugged"]
         myKey = {}
+        myKey["eth"] = eth0
+        print(eth0)
 
-        txspeed = round(float(wireless["txrate"]), 2)
-        print(txspeed)
-        myKey["TX"] = txspeed
-        return JsonResponse(myKey) 
-
+        return JsonResponse(myKey)

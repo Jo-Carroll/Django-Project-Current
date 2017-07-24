@@ -57,7 +57,7 @@ function startRefresh() {
                 document.getElementById("signal").style.borderColor= "green";   
             }
             if (data.cpuload == false){
-                document.getElementById("cpuload").innerHTML = "&#9940 " + "Could not find CPU load data " + "&#9940"
+                document.getElementById("cpuload").innerHTML = "&#9940 " + "Could not find CPU usage data " + "&#9940"
             }
             else {
                 document.getElementById("cpuload").innerHTML = "CPU usage: " + data.cpuload + "%"; 
@@ -134,12 +134,19 @@ function baz() {
 <script src="{% static 'flot/jquery.flot.axislabels.js' %}"></script>
 
 <script>
+
+    function startRefresh() {
+      setTimeout(startRefresh,60);
+      eth0()
+    };
+
 $(function() {
 
 		var data = [];
 			totalPoints = 60;
         var currentTX;
         var current;
+        var mar
     function getData() {
 
 			if (data.length > 0)
@@ -184,47 +191,40 @@ function ajay(){
        current = jdata.upsec - last 
        if (typeof(lastTX) == 'undefined')
             { lastTX = jdata.TX }
-       currentTX = jdata.TX - lastTX
+       currentTX = jdata.TX - lastTX 
+       lastTX = jdata.TX
+       
        //return current;
        
 }})}
 function GetData() {
     ajay()
     if (data.length > 0)
-        data = data.slice(1);
-    var currentrate = currentTX / current
+    data = data.slice(1);
     while (data.length < totalPoints) {
-       
-        console.log(currentrate)
-        data.push(currentrate);}
-        
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    data.push(currentTX * 8 / 4096);}  
+    //console.log(data.currentTX)
     var res = [];
-
-    //for (var current = 0; current < data.length; ajay()) {
-    //    res.push([current, data[current]])
-    //}
     for (var i = 0; i < data.length; ++i) {
         res.push([i, data[i]])
     }
-    
 	return res;
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		var updateInterval = 2000;
+
+		var updateInterval = 500;
 		$("#updateInterval").val(updateInterval).change(function () {
 			var v = $(this).val();
 			if (v && !isNaN(+v)) {
 				updateInterval = +v;
 				if (updateInterval < 1) {
 					updateInterval = 1;
-				} else if (updateInterval > 2000) {
-					updateInterval = 2000;
+				} else if (updateInterval > 2500) {
+					updateInterval = 2500;
 				}
 				$(this).val("" + updateInterval);
 			}
 		});
-
+        
         //graph options
         var options = {
 			series: {
@@ -237,7 +237,7 @@ function GetData() {
 			},
 			yaxis: {
 				min: 0,
-                max: 10000
+                max: 100
 			},
 			xaxis: {
 				show: false
@@ -259,9 +259,24 @@ function GetData() {
 		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
 	});
 
+/////////////////////////////eth0 check below
+function eth0(){
+    $.ajax({
+       url:"/lan/",
+       dataType: 'json',
+       method: "GET",
+       data: {IP: new URLSearchParams(window.location.search).get("IP")},
+       beforeSend: function(data, settings) {},
+       success: function(jdata){
+           console.log(jdata)
+           if (jdata.eth == 1){
+               document.getElementById("eth0").innerHTML = "CPE is plugged in"
+           }
+       
+}})
+}
 </script>
-<!-- HTML -->
-
 <div id="placeholder" ></div>
+<div id="eth0" title="Determine if the equipment is actually plugged in" name="dev">Loading CPE power state...</div1> <br>
 {% endblock graphs%}
 

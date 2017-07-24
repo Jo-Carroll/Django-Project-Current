@@ -92,8 +92,8 @@ def rates(request):
         elif (seconds / 120) >= 120:
        #     myKey["uptime"] = str(round(float(host["uptime"]) /60 /60, 2)) + " hours"
              myKey["color"] = False
-        dlspeed = round(int(interfaces[1]["stats"]["rx_bytes"]), 2) /1000000
-        #print(dlspeed)
+        dlspeed = round(int(interfaces[1]["stats"]["tx_bytes"]), 2)
+        print(dlspeed)
         myKey["RX"] = dlspeed
         myKey["TX"] = dlspeed #int(interfaces[1]["stats"]["tx_bytes"]) * 8 /100000
     #check the uptime and return a bool and/or a string (add that to myKey)
@@ -103,18 +103,21 @@ def rates(request):
         return HttpResponse("The page has died")
 
 def lan(request):
-    if request.method == 'GET':
+     if request.method == 'GET':
         global IP
         IP = request.GET.get('IP')
         loginurl = "http://{0}/login.cgi".format(IP)
-        ratesurl =  "http://{0}/ifaces.cgi".format(IP)
+        statusurl = "http://{0}/status.cgi".format(IP)
         auth = {'username': (None, 'ubnt'), 'password': (None, 'access')} #authenticate page
         get1 = requests.get(loginurl)
         post = requests.post(loginurl, files = auth, cookies = get1.cookies)
-        ratesDict = json.loads(requests.get(ratesurl, cookies = get1.cookies).content) #format the contents as a json object
-        host = ratesDict["host"]
-        interfaces = ratesDict["interfaces"]
+        json2Dict = json.loads(requests.get(statusurl, cookies = get1.cookies).content) #format the contents as a json object
+        wireless = json2Dict["wireless"] #get specific elements from the json 
+        host = json2Dict["host"]
         myKey = {}
 
-        return 
+        txspeed = round(float(wireless["txrate"]), 2)
+        print(txspeed)
+        myKey["TX"] = txspeed
+        return JsonResponse(myKey) 
 

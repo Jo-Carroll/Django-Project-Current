@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^status/', polls.views.status, name='status'),
     url(r'^rates/', polls.views.rates, name='rates'),
     url(r'^main/', polls.views.main, name='main'),
+    url(r'^lan/', polls.views.lan, name='lan'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

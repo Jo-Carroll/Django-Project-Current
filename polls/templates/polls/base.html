@@ -19,7 +19,7 @@ div1 {
     border-radius: 10px;
     margin-top: 100px;
     margin: auto;
-    width: 90%;
+    width: 60%;
     padding: 10px;
     display: flex;
     position: auto;
@@ -139,7 +139,7 @@ button{
     margin-top: 100px;
     margin: 10px;
     float: right;
-    width: 45%;
+    width: auto;
     height: auto;
     padding: 10px;
     display: flex;
@@ -156,7 +156,16 @@ button{
 #graphtitle{
      justify-content: center;
 }
-
+#legend{
+    margin-top: 100px;
+    margin: auto;
+    width: 40%;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
 
 	  .fire {
         		  animation: burn 1.5s linear infinite alternate;
@@ -164,6 +173,9 @@ button{
 		  	 -moz-animation: burn 1.5s linear infinite alternate;
 		  	  -ms-animation: burn 1.5s linear infinite alternate;        
 	  }
+      .basic{
+          font: 100%;
+      }
 
 	  @keyframes burn {
 			from { text-shadow: -.1em 0 .3em #fefcc9, .1em -.1em .3em #feec85, -.2em -.2em .4em #ffae34, .2em -.3em .3em #ec760c, -.2em -.4em .4em #cd4606, .1em -.5em .7em #973716, .1em -.7em .7em #451b0e; }
@@ -216,17 +228,18 @@ button{
 
 {% block script1 %}
 {% endblock %}
-
+<img id="legend" src="{% static 'legend.png' %}" />
 </div>
 
 <div id="info">
-    <h3 id=graphtitle>Network usage</h3> 
+    <h3 id=graphtitle>Network <br> usage: </h3> 
 {% block graphs%}
 {% endblock graphs%}
 
 <!-- <iframe id="speedtest" width="100%" height="600px" frameborder="0" src="http://sandprairie.speedtestcustom.com">Speed Test</iframe> -->
 
 </div>
+
 
 
 </body>

@@ -65,11 +65,12 @@ function startRefresh() {
                 document.getElementById("cpuload").style.borderColor= "red";
                 document.getElementById("cpuload").title= "The brain of the CPE is having a seizure";
                 var cups = document.getElementById("cpuload");
-                cups.className = "fire";
+                //cups.className = "fire";
             }
             else if (data.cpuload < 90 && data.cpuload >= 80){
                 document.getElementById("cpuload").style.borderColor= "yellow";
                 document.getElementById("cpuload").title= "Keep an eye on this guy..."
+                //cups.className = "basic";
             }
             else if(data.cpuload = 80){
                 document.getElementById("cpuload").style.borderColor= "green";
@@ -113,7 +114,7 @@ function baz() {
 <div4 id="uptime"   title="If the CPE has not been rebooted in the last 24 hours, ask them to reboot" name="dev">Loading CPE uptime...</div4> <br>
 <!--button type="button" onclick="bar();">Does the customer want to stream movies?</button--> <br>
 <div5 id="package"  name="dev">Loading package details...</div5><br>
-<div6 id="cpuload" name="dev">
+<div6 id="cpuload" class="basic" name="dev">Loading CPU details...</div6><br>
     
 
 
@@ -183,28 +184,34 @@ function ajay(){
        current = jdata.upsec - last 
        if (typeof(lastTX) == 'undefined')
             { lastTX = jdata.TX }
-       currentTX = jdata.TX //- lastTX
+       currentTX = jdata.TX - lastTX
        //return current;
-       console.log(jdata.TX)
+       
 }})}
 function GetData() {
     ajay()
     if (data.length > 0)
         data = data.slice(1);
-        
+    var currentrate = currentTX / current
     while (data.length < totalPoints) {
-        data.push(currentTX);}
+       
+        console.log(currentrate)
+        data.push(currentrate);}
+        
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     var res = [];
-   // for (; i < data.length; ajay()){
+
+    //for (var current = 0; current < data.length; ajay()) {
     //    res.push([current, data[current]])
     //}
     for (var i = 0; i < data.length; ++i) {
         res.push([i, data[i]])
     }
+    
 	return res;
 }
-		var updateInterval = 300;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		var updateInterval = 2000;
 		$("#updateInterval").val(updateInterval).change(function () {
 			var v = $(this).val();
 			if (v && !isNaN(+v)) {
@@ -230,11 +237,15 @@ function GetData() {
 			},
 			yaxis: {
 				min: 0,
-                max: 200
+                max: 10000
 			},
 			xaxis: {
 				show: false
-			}}
+			},
+            legend: {        
+            labelBoxBorderColor: "#fff"
+            }
+            }
 
         //create plot
 		var plot = $.plot("#placeholder", [ GetData() ], options);

@@ -43,9 +43,10 @@ function startRefresh() {
         beforeSend: function(data, settings) {
         },
         success: function(data){
-            document.getElementById("distance").innerHTML = "Distance from tower: " + data.distance;
-            document.getElementById("signal").innerHTML = "Signal Strength: " + data.signal;
-            document.getElementById("hostname").innerHTML = "Customer Name: " + data.hostname;
+            document.getElementById("distance").innerHTML = "Distance from tower: " + "<br>" + data.distance;
+            document.getElementById("signal").innerHTML = "Signal Strength: " + "<br>" + data.signal;
+            document.getElementById("hostname").innerHTML = "Customer Name: " + "<br>" + data.hostname;
+                       
             if (data.signalint > 70){
                 document.getElementById("signal").style.borderColor= "red";
             }
@@ -55,7 +56,34 @@ function startRefresh() {
             else if(data.signalint < 65){
                 document.getElementById("signal").style.borderColor= "green";   
             }
-
+            if (data.cpuload == false){
+                document.getElementById("cpuload").innerHTML = "&#9940 " + "Could not find CPU load data " + "&#9940"
+            }
+            else {
+                document.getElementById("cpuload").innerHTML = "CPU usage: " + data.cpuload + "%"; 
+                if (data.cpuload >= 90){
+                document.getElementById("cpuload").style.borderColor= "red";
+                document.getElementById("cpuload").title= "The brain of the CPE is having a seizure";
+                var cups = document.getElementById("cpuload");
+                cups.className = "fire";
+            }
+            else if (data.cpuload < 90 && data.cpuload >= 80){
+                document.getElementById("cpuload").style.borderColor= "yellow";
+                document.getElementById("cpuload").title= "Keep an eye on this guy..."
+            }
+            else if(data.cpuload = 80){
+                document.getElementById("cpuload").style.borderColor= "green";
+                document.getElementById("cpuload").title= "If the CPU usage is stuck at 100% for more than a minute, it may be a good idea to reboot the CPE";
+            }}
+            if (data.package = "Smart Link"){
+                document.getElementById("package").style.border= "5px solid red";
+                document.getElementById("package").innerHTML =  "Smartlink package details: " + "<br>" + " 2 Mb download, 0.5MB upload"
+                document.getElementById("package").title = "We recommend Elitelink or better for video streaming"
+            }
+            else if(data.package = "Elite Link"){
+                document.getElementById("package").style.border = "5px solid green";
+                document.getElementById("package").innerHTML = "Elitelink package details: 3 Mb download, 0.75MB upload"
+            }
       }});
     }
 function baz() {
@@ -75,27 +103,7 @@ function baz() {
         }
       }});
     }
-function bar() {
-    var data = $.ajax({
-        url:"/status/",
-        type: "GET",
-        data: {IP: new URLSearchParams(window.location.search).get("IP")},
-        beforeSend: function(data, settings) {
-        },
-        success: function(data){;
-            if (data.package = "Smart Link"){
-                document.getElementById("package").style.border= "5px solid red";
-                document.getElementById("package").innerHTML = "Smartlink package details: 2 Mb download, 0.5MB upload"
-                document.getElementById("package").title = "We recommend Elitelink or better for video streaming"
-            }
-            else if(data.package = "Elite Link"){
-                document.getElementById("package").style.border = "5px solid green";
-                document.getElementById("package").innerHTML = "Elitelink package details: 3 Mb download, 0.75MB upload"
 
-            }
-      }});
-    
-}
 </script>
 
 
@@ -103,8 +111,12 @@ function bar() {
 <div2 id="distance" title="Distance in miles from the connected tower" name="dev">Loading distance from tower...</div2> <br>
 <div3 id="signal"   title="A good signal strength is anywhere below 70" name="dev">Loading signal strength...</div3> <br>
 <div4 id="uptime"   title="If the CPE has not been rebooted in the last 24 hours, ask them to reboot" name="dev">Loading CPE uptime...</div4> <br>
-<button type="button" title="Video streaming capability depends on the package. Smartlink (base package) customers should be recommended to upgrade their package" onclick=bar()>Does the customer want to stream movies?</button> <br>
-<div5 id="package"  name="dev"></div5> <br>
+<!--button type="button" onclick="bar();">Does the customer want to stream movies?</button--> <br>
+<div5 id="package"  name="dev">Loading package details...</div5><br>
+<div6 id="cpuload" name="dev">
+    
+
+
 
 
 {% endblock script1 %}
@@ -157,9 +169,8 @@ $(function() {
             
 			return res;
 		}
-
-function GetData() {
-     $.ajax({
+function ajay(){
+    $.ajax({
        url:"/rates/",
        dataType: 'json',
        method: "GET",
@@ -167,30 +178,32 @@ function GetData() {
        beforeSend: function(data, settings) {},
        success: function(jdata){
        if (typeof(last) == 'undefined') {
-           last = jdata.uptime
+           last = jdata.upsec
            }
-           //change these to jdata.upsec......
-        console.log(jdata.uptime)
-       current = jdata.uptime - last 
-       //console.log(current)
+       current = jdata.upsec - last 
        if (typeof(lastTX) == 'undefined')
             { lastTX = jdata.TX }
        currentTX = jdata.TX //- lastTX
-    
-}}); //end of ajax call
-
+       //return current;
+       console.log(jdata.TX)
+}})}
+function GetData() {
+    ajay()
     if (data.length > 0)
         data = data.slice(1);
+        
     while (data.length < totalPoints) {
         data.push(currentTX);}
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     var res = [];
+   // for (; i < data.length; ajay()){
+    //    res.push([current, data[current]])
+    //}
     for (var i = 0; i < data.length; ++i) {
         res.push([i, data[i]])
     }
 	return res;
 }
-
 		var updateInterval = 300;
 		$("#updateInterval").val(updateInterval).change(function () {
 			var v = $(this).val();
@@ -205,7 +218,8 @@ function GetData() {
 			}
 		});
 
-		var plot = $.plot("#placeholder", [ GetData() ], {
+        //graph options
+        var options = {
 			series: {
 				shadowSize: 0,	// Drawing is faster without shadows
 				lines: {
@@ -216,12 +230,14 @@ function GetData() {
 			},
 			yaxis: {
 				min: 0,
-                max: 300
+                max: 200
 			},
 			xaxis: {
 				show: false
-			}
-		});
+			}}
+
+        //create plot
+		var plot = $.plot("#placeholder", [ GetData() ], options);
 
 		function update() {
 			plot.setData([GetData()]);

@@ -29,10 +29,12 @@ input[type=submit]:hover {
     background-color: #45a049;
 }
 
-img {
+#SPlogo {
 	width:50%;
 	height:auto;
 	margin:120px 150px 10px 230px;
+  margin-left: 25%;
+  display: flex;
 }
 
 div {
@@ -42,6 +44,7 @@ div {
   position: fixed;
   align-items: center;
   justify-content: center;
+  display: flex;
 }
 
 </style>
@@ -51,7 +54,7 @@ div {
 </head>
 
 
-<img src="{% static 'SPlogo.jpg' %}" alt="Sand Prairie Logo" />
+<img id="SPlogo" src="{% static 'SPlogo.jpg' %}" alt="Sand Prairie Logo" />
 
 
 <div>

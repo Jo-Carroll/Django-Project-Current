@@ -193,3 +193,5 @@ hostname to determine the type of packade the customer has, so all I need to do 
 tell the crc peeps what package the customer has, so they can advise on whether it
 may be a good idea to upgrade their package, as the lower end packages are not meant for 
 hd video streaming and such
+
+start a timer for cpuload, to determine if it is above 90% for over a minute.

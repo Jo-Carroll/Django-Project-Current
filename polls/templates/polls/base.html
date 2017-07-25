@@ -11,7 +11,7 @@
     display: flex;
     vertical-align: left;
 }
-div1 {
+#hostname {
 
     font-family: Verdana;
     font-size: 36;
@@ -26,7 +26,7 @@ div1 {
     align-items: center;
     justify-content: center;
     }
-div2 {
+#distance {
 
     font-family: Verdana;
     border: 5px solid yellowgreen;
@@ -40,7 +40,7 @@ div2 {
     align-items: center;
     justify-content: center;
 }
-div3 {
+#signal {
 
     font-family: Verdana;
     border: 5px solid;
@@ -55,7 +55,7 @@ div3 {
     align-items: center;
     justify-content: center;
 }
-div4 {
+#uptime {
 
     font-family: Verdana;
     border: 5px solid yellowgreen;
@@ -69,7 +69,7 @@ div4 {
     align-items: center;
     justify-content: center;
 }
-div5 {
+#package {
     font-family: Verdana;
     border: 5px solid yellowgreen;
     border-radius: 10px;
@@ -82,7 +82,7 @@ div5 {
     align-items: center;
     justify-content: center;
 }
-div6 {
+#cpuload{
 
     font-family: Verdana;
     border: 5px solid yellowgreen;
@@ -166,6 +166,19 @@ button{
     align-items: center;
     justify-content: center;
 }
+#eth0{
+    font-family: Verdana;
+    border: 5px solid yellowgreen;
+    border-radius: 10px;
+    margin-top: 100px;
+    margin: auto;
+    width: 30%;
+    padding: 10px;
+    display: flex;
+    position: auto;
+    align-items: center;
+    justify-content: center;
+}
 
 	  .fire {
         		  animation: burn 1.5s linear infinite alternate;
@@ -232,7 +245,7 @@ button{
 </div>
 
 <div id="info">
-    <h3 id=graphtitle>Bandwidth <br> usage %: </h3> 
+<h3 id=graphtitle>Bandwidth <br> usage %: </h3> 
 {% block graphs%}
 {% endblock graphs%}
 
@@ -241,6 +254,8 @@ button{
 </div>
 
 
+{% block plugged %}
+{% endblock plugged %}
 
 </body>
 </html>

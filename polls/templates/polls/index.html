@@ -23,70 +23,118 @@
 <script>
 
 
-   $(function() {
-    //getinit();
+$(function() {
     startRefresh();
-    });
+    secondaryRefresh();
+});
 
 function startRefresh() {
-      setTimeout(startRefresh,60);
-      foo();
-      baz();
-    };
+    setTimeout(startRefresh, 10000);
+    sig(); // signal strength
+    baz(); // uptime
+    eth0(); // LAN0 plugged in or not
+    cpu(); //cpu usage
+};
 
-    function foo() {
-      
-      var data = $.ajax({
-        url:"/status/",
-        type: "GET",
-        data: {IP: new URLSearchParams(window.location.search).get("IP")},
-        beforeSend: function(data, settings) {
-        },
-        success: function(data){
-            document.getElementById("distance").innerHTML = "Distance from tower: " + "<br>" + data.distance;
-            document.getElementById("signal").innerHTML = "Signal Strength: " + "<br>" + data.signal;
-            document.getElementById("hostname").innerHTML = "Customer Name: " + "<br>" + data.hostname;
-                       
-            if (data.signalint > 70){
-                document.getElementById("signal").style.borderColor= "red";
-            }
-            else if(data.signalint <= 70 && data.signalint > 65){
-                document.getElementById("signal").style.borderColor= "yellow";
-            }
-            else if(data.signalint < 65){
-                document.getElementById("signal").style.borderColor= "green";   
-            }
-            if (data.cpuload == false){
-                document.getElementById("cpuload").innerHTML = "&#9940 " + "Could not find CPU usage data " + "&#9940"
-            }
-            else {
-                document.getElementById("cpuload").innerHTML = "CPU usage: " + data.cpuload + "%"; 
-                if (data.cpuload >= 90){
-                document.getElementById("cpuload").style.borderColor= "red";
-                document.getElementById("cpuload").title= "The brain of the CPE is having a seizure";
-                var cups = document.getElementById("cpuload");
-                //cups.className = "fire";
-            }
-            else if (data.cpuload < 90 && data.cpuload >= 80){
-                document.getElementById("cpuload").style.borderColor= "yellow";
-                document.getElementById("cpuload").title= "Keep an eye on this guy..."
-                //cups.className = "basic";
-            }
-            else if(data.cpuload = 80){
-                document.getElementById("cpuload").style.borderColor= "green";
-                document.getElementById("cpuload").title= "If the CPU usage is stuck at 100% for more than a minute, it may be a good idea to reboot the CPE";
-            }}
-            if (data.package = "Smart Link"){
-                document.getElementById("package").style.border= "5px solid red";
-                document.getElementById("package").innerHTML =  "Smartlink package details: " + "<br>" + " 2 Mb download, 0.5MB upload"
-                document.getElementById("package").title = "We recommend Elitelink or better for video streaming"
-            }
-            else if(data.package = "Elite Link"){
-                document.getElementById("package").style.border = "5px solid green";
-                document.getElementById("package").innerHTML = "Elitelink package details: 3 Mb download, 0.75MB upload"
-            }
-      }});
-    }
+function secondaryRefresh() {
+    setTimeout(secondaryRefresh, 100000);
+    pack(); //package data (powerlink, etc...)
+    dis(); //distance from tower
+};
+
+function dis() {
+    var data = $.ajax({
+    url:"/status/",
+    type: "GET",
+    data: {IP: new URLSearchParams(window.location.search).get("IP")},
+    beforeSend: function(data, settings) {
+    },
+    success: function(data){
+        document.getElementById("distance").innerHTML = "Distance from tower: " + "<br>" + data.distance;
+    }});
+}
+
+function sig() {
+    
+    var data = $.ajax({
+    url:"/status/",
+    type: "GET",
+    data: {IP: new URLSearchParams(window.location.search).get("IP")},
+    beforeSend: function(data, settings) {
+    },
+    success: function(data){
+        document.getElementById("signal").innerHTML = "Signal Strength: " + "<br>" + data.signal;
+        
+                    
+        if (data.signalint > 70){
+            document.getElementById("signal").style.borderColor= "red";
+        }
+        else if(data.signalint <= 70 && data.signalint > 65){
+            document.getElementById("signal").style.borderColor= "yellow";
+        }
+        else if(data.signalint < 65){
+            document.getElementById("signal").style.borderColor= "green";   
+        }
+    }});
+}
+
+function cpu() {
+    var data = $.ajax({
+    url:"/status/",
+    type: "GET",
+    data: {IP: new URLSearchParams(window.location.search).get("IP")},
+    beforeSend: function(data, settings) {
+    },
+    success: function(data){
+        if (data.cpuload == false){
+        document.getElementById("cpuload").innerHTML = "&#9940 " + "Could not find CPU usage data " + "&#9940"
+        }
+        else {
+            document.getElementById("cpuload").innerHTML = "CPU usage: " + data.cpuload + "%"; 
+            if (data.cpuload >= 90){
+            document.getElementById("cpuload").style.borderColor= "red";
+            document.getElementById("cpuload").title= "The brain of the CPE is having a seizure";
+            //var cups = document.getElementById("cpuload");
+            //cups.className = "fire";
+        }
+        else if (data.cpuload < 90 && data.cpuload >= 80){
+            document.getElementById("cpuload").style.borderColor= "yellow";
+            document.getElementById("cpuload").title= "Keep an eye on this guy..."
+            //cups.className = "basic";
+        }
+        else if(data.cpuload <= 80){
+            document.getElementById("cpuload").style.borderColor= "green";
+            document.getElementById("cpuload").title= "If the CPU usage is stuck at 100% for more than a minute, it may be a good idea to reboot the CPE";
+            //cups.className = "basic";
+        }}
+    }});
+}
+function pack() {
+    var data = $.ajax({
+    url:"/package/",
+    type: "GET",
+    data: {IP: new URLSearchParams(window.location.search).get("IP")},
+    beforeSend: function(data, settings) {
+    },
+    success: function(data){
+    document.getElementById("hostname").innerHTML = "Customer Name: " + "<br>" + data.hostname;
+    console.log(data.package)
+    if (data.package == "Smart Link"){
+            document.getElementById("package").style.border= "5px solid red";
+            document.getElementById("package").innerHTML =  "Smartlink package details: " + "<br>" + " 2 Mb download, 0.5 Mb upload"
+            document.getElementById("package").title = "We recommend Elitelink or better for video streaming"
+        }
+        else if(data.package == "Elite Link"){
+            document.getElementById("package").style.border = "5px solid green";
+            document.getElementById("package").innerHTML = "Elitelink package details: 3 Mb download, 0.75 Mb upload"
+        }
+        else if(data.package == "Power Link"){
+            document.getElementById("package").style.border = "5px solid green";
+            document.getElementById("package").innerHTML = "Powerlink package details: 4 Mb download, 0.75 Mb upload"
+        }
+    }});
+}
+
 function baz() {
       var data = $.ajax(
         {url:"/rates/",
@@ -135,11 +183,6 @@ function baz() {
 
 <script>
 
-    function startRefresh() {
-      setTimeout(startRefresh,60);
-      eth0()
-    };
-
 $(function() {
 
 		var data = [];
@@ -147,36 +190,7 @@ $(function() {
         var currentTX;
         var current;
         var mar
-    function getData() {
-
-			if (data.length > 0)
-				data = data.slice(1);
-
-			// Do a random walk
-
-			while (data.length < totalPoints) {
-
-				var prev = data.length > 0 ? data[data.length - 1] : 50,
-					y = prev + Math.random() * 10 - 5;
-
-				if (y < 0) {
-					y = 0;
-				} else if (y > 100) {
-					y = 100;
-				}
-
-				data.push(y);
-			}
-
-			// Zip the generated y values with the x values
-
-			var res = [];
-			for (var i = 0; i < data.length; ++i) {
-				res.push([i, data[i]])
-			}
-            
-			return res;
-		}
+    
 function ajay(){
     $.ajax({
        url:"/rates/",
@@ -202,8 +216,7 @@ function GetData() {
     if (data.length > 0)
     data = data.slice(1);
     while (data.length < totalPoints) {
-    data.push(currentTX * 8 / 4096);}  
-    //console.log(data.currentTX)
+    data.push(currentTX * 8 / 4096);} 
     var res = [];
     for (var i = 0; i < data.length; ++i) {
         res.push([i, data[i]])
@@ -211,7 +224,7 @@ function GetData() {
 	return res;
 }
 
-		var updateInterval = 500;
+		var updateInterval = 1000;
 		$("#updateInterval").val(updateInterval).change(function () {
 			var v = $(this).val();
 			if (v && !isNaN(+v)) {
@@ -237,7 +250,7 @@ function GetData() {
 			},
 			yaxis: {
 				min: 0,
-                max: 100
+                max: 1000
 			},
 			xaxis: {
 				show: false
@@ -259,7 +272,16 @@ function GetData() {
 		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
 	});
 
-/////////////////////////////eth0 check below
+</script>
+<div id="placeholder" ></div> <br>
+
+{% endblock graphs%}
+
+
+{% block plugged %}
+
+<script>
+
 function eth0(){
     $.ajax({
        url:"/lan/",
@@ -268,15 +290,20 @@ function eth0(){
        data: {IP: new URLSearchParams(window.location.search).get("IP")},
        beforeSend: function(data, settings) {},
        success: function(jdata){
-           console.log(jdata)
            if (jdata.eth == 1){
                document.getElementById("eth0").innerHTML = "CPE is plugged in"
+               document.getElementById("eth0").style.borderColor = "green"
+           }
+           else if(jdata.eth == 0){
+               document.getElementById("eth0").innerHTML = "CPE is not plugged in"
+               document.getElementById("eth0").style.borderColor = "red"
            }
        
 }})
 }
 </script>
-<div id="placeholder" ></div>
-<div id="eth0" title="Determine if the equipment is actually plugged in" name="dev">Loading CPE power state...</div1> <br>
-{% endblock graphs%}
+
+<div id="eth0" title="Determine if the equipment is actually plugged in" name="dev">Loading CPE power state...</div> <br>
+
+{% endblock plugged %}
 

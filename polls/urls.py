@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^status/', views.status, name='status'),
     url(r'^rates/', views.rates, name='rates'),
     url(r'^lan/', views.lan, name='lan'),
+    url(r'^package/', views.package, name='package'),
     
 
 ]

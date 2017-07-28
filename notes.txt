@@ -200,3 +200,15 @@ start a timer for cpuload, to determine if it is above 90% for over a minute.
 to accurately calculate the current "RATE" of data transfer, I need to get the 
 current bits by subtracting the difference in two ajax calls, delimited by the 
 ajax call.(to ensure that I get two different readings). Compare the current p;qaruijhtgwo9uihjtuag.yk,.
+
+fixed the graph. I think
+
+added some fire css to the letters on cpuload when it reads above 90%
+
+
+need to create a wisdom box where recommendations will be placed
+the problem is that many of the conditions for the wisom are
+insode loops. When I append (=+) to the innerhtml of the element wisdom,
+it keeps adding the same phrases over and over again
+potential solutions:
+    

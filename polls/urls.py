@@ -7,7 +7,9 @@ urlpatterns = [
     url(r'^rates/', views.rates, name='rates'),
     url(r'^lan/', views.lan, name='lan'),
     url(r'^package/', views.package, name='package'),
-    
+    url(r'^lanabled/', views.lanabled, name='lanabled'),
+    url(r'^plex/', views.plex, name='plex   '),
+ 
 
 ]
 

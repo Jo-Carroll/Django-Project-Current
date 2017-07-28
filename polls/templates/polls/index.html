@@ -22,7 +22,6 @@
  
 <script>
 
-
 $(function() {
     startRefresh();
     secondaryRefresh();
@@ -30,16 +29,18 @@ $(function() {
 
 function startRefresh() {
     setTimeout(startRefresh, 10000);
-    sig(); // signal strength
-    baz(); // uptime
+    sig();  // signal strength
+    baz();  // uptime
+    cpu();  //cpu usage
     eth0(); // LAN0 plugged in or not
-    cpu(); //cpu usage
 };
 
 function secondaryRefresh() {
     setTimeout(secondaryRefresh, 100000);
     pack(); //package data (powerlink, etc...)
     dis(); //distance from tower
+    enabled(); //check to see if member is enabled
+    plex(); //determine if there is a physical malfunction
 };
 
 function dis() {
@@ -51,8 +52,11 @@ function dis() {
     },
     success: function(data){
         document.getElementById("distance").innerHTML = "Distance from tower: " + "<br>" + data.distance;
+        document.getElementById("distance").style.borderColor = "yellowgreen"
     }});
 }
+
+var signals = ""
 
 function sig() {
     
@@ -65,19 +69,28 @@ function sig() {
     success: function(data){
         document.getElementById("signal").innerHTML = "Signal Strength: " + "<br>" + data.signal;
         
+        if (signals == ""){
+            if(data.signalint > 70){
+                signals = "&#9755 Antennae signal is poor, realign or check LOS <br>"
+                document.getElementById("wisdom").innerHTML += signals
+                }
+            }
                     
         if (data.signalint > 70){
             document.getElementById("signal").style.borderColor= "red";
+            document.getElementById("wisdom").style.borderColor = "red"
+            
         }
         else if(data.signalint <= 70 && data.signalint > 65){
-            document.getElementById("signal").style.borderColor= "yellow";
+            document.getElementById("signal").style.borderColor= "#FFF700";
+            document.getElementById("wisdom").style.borderColor = "red"
         }
         else if(data.signalint < 65){
             document.getElementById("signal").style.borderColor= "green";   
         }
     }});
 }
-
+var CPUs = ""
 function cpu() {
     var data = $.ajax({
     url:"/status/",
@@ -86,26 +99,45 @@ function cpu() {
     beforeSend: function(data, settings) {
     },
     success: function(data){
+        if (CPUs == ""){
+            if(data.cpuload >= 90){
+                CPUs = "&#9755 CPU usage is off the charts: reboot the CPE, check for firmware updates <br>"
+                
+                }
+            
+            else if (data.cpuload < 90){
+                CPUs = ""
+            }
+            document.getElementById("wisdom").innerHTML += CPUs
+        }
+
         if (data.cpuload == false){
         document.getElementById("cpuload").innerHTML = "&#9940 " + "Could not find CPU usage data " + "&#9940"
+        
         }
         else {
             document.getElementById("cpuload").innerHTML = "CPU usage: " + data.cpuload + "%"; 
             if (data.cpuload >= 90){
             document.getElementById("cpuload").style.borderColor= "red";
-            document.getElementById("cpuload").title= "The brain of the CPE is having a seizure";
-            //var cups = document.getElementById("cpuload");
-            //cups.className = "fire";
+            document.getElementById("cpuload").title= "This is actually fairly normal. Have the customer reboot the CPE once.";
+            var cups = document.getElementById("cpuload");
+            cups.className = "fire";
+            document.getElementById("wisdom").style.borderColor = "red"
+            
+            
         }
+        
         else if (data.cpuload < 90 && data.cpuload >= 80){
-            document.getElementById("cpuload").style.borderColor= "yellow";
+            document.getElementById("cpuload").style.borderColor= "#FFF700";
             document.getElementById("cpuload").title= "Keep an eye on this guy..."
-            //cups.className = "basic";
+            var cups = document.getElementById("cpuload");
+            cups.className = "basic";
         }
         else if(data.cpuload <= 80){
             document.getElementById("cpuload").style.borderColor= "green";
             document.getElementById("cpuload").title= "If the CPU usage is stuck at 100% for more than a minute, it may be a good idea to reboot the CPE";
-            //cups.className = "basic";
+            var cups = document.getElementById("cpuload");
+            cups.className = "basic";
         }}
     }});
 }
@@ -118,20 +150,21 @@ function pack() {
     },
     success: function(data){
     document.getElementById("hostname").innerHTML = "Customer Name: " + "<br>" + data.hostname;
-    console.log(data.package)
+    document.getElementById("hostname").style.borderColor = "yellowgreen"
     if (data.package == "Smart Link"){
             document.getElementById("package").style.border= "5px solid red";
             document.getElementById("package").innerHTML =  "Smartlink package details: " + "<br>" + " 2 Mb download, 0.5 Mb upload"
             document.getElementById("package").title = "We recommend Elitelink or better for video streaming"
-        }
-        else if(data.package == "Elite Link"){
-            document.getElementById("package").style.border = "5px solid green";
-            document.getElementById("package").innerHTML = "Elitelink package details: 3 Mb download, 0.75 Mb upload"
-        }
-        else if(data.package == "Power Link"){
-            document.getElementById("package").style.border = "5px solid green";
-            document.getElementById("package").innerHTML = "Powerlink package details: 4 Mb download, 0.75 Mb upload"
-        }
+    }
+    else if(data.package == "Elite Link"){
+        document.getElementById("package").style.border = "5px solid green";
+        document.getElementById("package").innerHTML = "Elitelink package details: 3 Mb download, 0.75 Mb upload"
+    }
+    else if(data.package == "Power Link"){
+        document.getElementById("package").style.border = "5px solid green";
+        document.getElementById("package").innerHTML = "Powerlink package details: 4 Mb download, 0.75 Mb upload"
+    }
+
     }});
 }
 
@@ -157,12 +190,13 @@ function baz() {
 
 
 <div1 id="hostname" title="This is the customer's name" name="dev">Loading customer name...</div1> <br>
-<div2 id="distance" title="Distance in miles from the connected tower" name="dev">Loading distance from tower...</div2> <br>
 <div3 id="signal"   title="A good signal strength is anywhere below 70" name="dev">Loading signal strength...</div3> <br>
-<div4 id="uptime"   title="If the CPE has not been rebooted in the last 24 hours, ask them to reboot" name="dev">Loading CPE uptime...</div4> <br>
-<!--button type="button" onclick="bar();">Does the customer want to stream movies?</button--> <br>
+<div4 id="uptime"   title=" If the CPE has not been rebooted in the last 24 hours, ask them to reboot" name="dev">Loading CPE uptime...</div4> <br>
+<!--button type="button" onclick="bar();">Does the customer want to stream movies?</button--> 
 <div5 id="package"  name="dev">Loading package details...</div5><br>
 <div6 id="cpuload" class="basic" name="dev">Loading CPU details...</div6><br>
+<div2 id="distance" title="Distance in miles from the connected tower" name="dev">Loading distance from tower...</div2> <br>
+
     
 
 
@@ -186,7 +220,7 @@ function baz() {
 $(function() {
 
 		var data = [];
-			totalPoints = 60;
+			totalPoints = 100;
         var currentTX;
         var current;
         var mar
@@ -207,16 +241,15 @@ function ajay(){
             { lastTX = jdata.TX }
        currentTX = jdata.TX - lastTX 
        lastTX = jdata.TX
-       
-       //return current;
-       
+
 }})}
 function GetData() {
     ajay()
+
     if (data.length > 0)
     data = data.slice(1);
     while (data.length < totalPoints) {
-    data.push(currentTX * 8 / 4096);} 
+    data.push(currentTX * 8 / 3072);} 
     var res = [];
     for (var i = 0; i < data.length; ++i) {
         res.push([i, data[i]])
@@ -224,7 +257,7 @@ function GetData() {
 	return res;
 }
 
-		var updateInterval = 1000;
+		var updateInterval = 1200;
 		$("#updateInterval").val(updateInterval).change(function () {
 			var v = $(this).val();
 			if (v && !isNaN(+v)) {
@@ -245,28 +278,34 @@ function GetData() {
 				lines: {
 					show:true,
 					linewidth:1.2,
-					fill:true
+					fill:true,
+                    color: "red"
 				}
 			},
+            color: "#f00",
 			yaxis: {
 				min: 0,
-                max: 1000
+                max: 100
 			},
 			xaxis: {
 				show: false
 			},
             legend: {        
-            labelBoxBorderColor: "#fff"
             }
             }
 
         //create plot
 		var plot = $.plot("#placeholder", [ GetData() ], options);
 
+        function bord(){
+            document.getElementById("info").style.borderColor = "yellowgreen"
+        }
+
 		function update() {
 			plot.setData([GetData()]);
 			plot.draw();
 			setTimeout(update, updateInterval);
+            setTimeout(bord,6000)
 		}
 		update();
 		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
@@ -281,7 +320,7 @@ function GetData() {
 {% block plugged %}
 
 <script>
-
+var pluggs = ""
 function eth0(){
     $.ajax({
        url:"/lan/",
@@ -290,6 +329,12 @@ function eth0(){
        data: {IP: new URLSearchParams(window.location.search).get("IP")},
        beforeSend: function(data, settings) {},
        success: function(jdata){
+           if (pluggs == ""){
+            if(jdata.eth == 0){ 
+                pluggs = "&#9755 Make sure POE is plugged in correctly, check cable ends for blackening, water, and poor pin contact <br>"
+                document.getElementById("wisdom").innerHTML += pluggs
+                }
+            }
            if (jdata.eth == 1){
                document.getElementById("eth0").innerHTML = "CPE is plugged in"
                document.getElementById("eth0").style.borderColor = "green"
@@ -301,9 +346,86 @@ function eth0(){
        
 }})
 }
+var enabs = ""
+function enabled(){
+    $.ajax({
+       url:"/lanabled/",
+       dataType: 'json',
+       method: "GET",
+       data: {IP: new URLSearchParams(window.location.search).get("IP")},
+       beforeSend: function(data, settings) {},
+       success: function(jdata){
+           if (enabs == ""){
+            if(jdata.enabled == false){ 
+                enabs = "&#9755 Make sure customer is current on bill payments <br>"
+                document.getElementById("wisdom").innerHTML += enabs
+                }
+            }
+           if (jdata.enabled == true){
+               document.getElementById("enabled").innerHTML = "CPE is enabled"
+               document.getElementById("enabled").style.borderColor = "green"
+           }
+           else if(jdata.enabled == false){
+               document.getElementById("enabled").innerHTML = "CPE is not enabled"
+               document.getElementById("enabled").style.borderColor = "red"
+           }   
+    }})
+}
+malfs = ""
+function plex(){
+    $.ajax({
+       url:"/plex/",
+       dataType: 'json',
+       method: "GET",
+       data: {IP: new URLSearchParams(window.location.search).get("IP")},
+       beforeSend: function(data, settings) {},
+       success: function(jdata){
+           if (malfs == ""){
+            if(jdata.plex == false){ 
+                malfs = "&#9755 Physical malfunction: bad cable, bad POE, bad antennae are all possibilities <br>"
+                document.getElementById("wisdom").innerHTML += malfs
+                }
+            }
+            else if(jdata.plex == true){
+                malfs = ""
+                document.getElementById("wisdom").innerHTML += malfs
+            }
+           if (jdata.plex == true){
+               document.getElementById("plex").innerHTML = "No physical malfunctions detected"
+               document.getElementById("plex").style.borderColor = "green"
+           }
+           else if(jdata.plex == false){
+               document.getElementById("plex").innerHTML = "Physical malfunctions detected"
+               document.getElementById("plex").style.borderColor = "red"
+           }   
+    }})
+}
+
 </script>
 
-<div id="eth0" title="Determine if the equipment is actually plugged in" name="dev">Loading CPE power state...</div> <br>
+<div id="eth0" title="Determine if the equipment is actually plugged in" name="dev">
+Loading CPE power status...
+</div> <br>
+<div id="enabled" title="Determine if the equipment is enabled" name="dev">
+Loading CPE enabled state...
+</div> <br>
+<div id="plex" title="If a physical malfunction is detected, one or more parts of the equipment may need to be replaced" name="dev">
+Checking hardware integrity...
+</div> <br>
+
 
 {% endblock plugged %}
 
+{% block wisdom %}
+
+
+<script>
+
+</script>
+
+<div id="wisdom" title="Sage wisdom from a little green man" name="dev">
+    <h3 style="font-family:fantasy;">Net wizard<h3> <br>
+</div>
+
+
+{% endblock wisdom %}

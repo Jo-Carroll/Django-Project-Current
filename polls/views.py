@@ -79,7 +79,6 @@ def package(request):
             elif "PL" in value:
                 myKey["package"] = "Power Link"
             myKey["hostname"]  = value.split("[", 1)[0]
-            print(myKey)
     return JsonResponse(myKey) 
 
 def rates(request):
@@ -100,15 +99,15 @@ def rates(request):
         seconds = int(host["uptime"])
         m, s = divmod(seconds, 60)
         h, m = divmod(m, 60)
-        myKey["uptime"] = ("%d:%02d:%02d" % (h, m, s))
+        myKey["uptime"] = ("%d hours, %2d minutes, aaaannnddd %2d seconds" % (h, m, s))
         if (seconds / 120) < 120:
             myKey["color"] = True
         elif (seconds / 120) >= 120:
              myKey["color"] = False
-        dlspeed = round(int(interfaces[1]["stats"]["tx_bytes"]), 2)
+        indy = len(interfaces) - 1
+        dlspeed = round(int(interfaces[indy]["stats"]["tx_bytes"]), 2)
         myKey["RX"] = dlspeed
         myKey["TX"] = dlspeed
-
         return JsonResponse(myKey)
 
 
@@ -123,7 +122,46 @@ def lan(request):
         get1 = requests.get(loginurl)
         post = requests.post(loginurl, files = auth, cookies = get1.cookies)
         json2Dict = json.loads(requests.get(statusurl, cookies = get1.cookies).content) #format the contents as a json object
-        eth0 = json2Dict["interfaces"][1]["status"]["plugged"]
+        eth0 = json2Dict["interfaces"][0]["status"]["plugged"]
         myKey["eth"] = eth0
 
         return JsonResponse(myKey)
+
+def lanabled(request):
+    myKey = {}
+    if request.method == 'GET':
+        global IP
+        IP = request.GET.get('IP')
+    loginurl = "http://{0}/login.cgi".format(IP)
+    statusurl = "http://{0}/status.cgi".format(IP)
+    auth = {'username': (None, 'ubnt'), 'password': (None, 'access')} #authenticate page
+    get1 = requests.get(loginurl)
+    post = requests.post(loginurl, files = auth, cookies = get1.cookies)
+    json2Dict = json.loads(requests.get(statusurl, cookies = get1.cookies).content) #format the contents as a json object
+    if json2Dict["interfaces"][1]["enabled"] == True:
+        myKey["enabled"] = True #json2Dict["interfaces"][1]["enabled"]
+        return JsonResponse(myKey)
+    else:
+        badkey = {}
+        badkey["enabled"] = False
+        return JsonResponse(badkey)
+
+def plex(request):
+    myKey = {}
+    if request.method == 'GET':
+        global IP
+        IP = request.GET.get('IP')
+    loginurl = "http://{0}/login.cgi".format(IP)
+    statusurl = "http://{0}/status.cgi".format(IP)
+    auth = {'username': (None, 'ubnt'), 'password': (None, 'access')} #authenticate page
+    get1 = requests.get(loginurl)
+    post = requests.post(loginurl, files = auth, cookies = get1.cookies)
+    json2Dict = json.loads(requests.get(statusurl, cookies = get1.cookies).content) #format the contents as a json object
+    if json2Dict["interfaces"][1]["status"]["duplex"] == 1:
+        myKey["plex"] = True
+    elif json2Dict["interfaces"][1]["status"]["duplex"] == 0:
+        myKey["plex"] = False
+    return JsonResponse(myKey)
+
+
+

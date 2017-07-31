@@ -2,7 +2,7 @@
 
 <style>
 
-#info {
+#graphinfo {
     font-family: Verdana;
     border: 5px solid grey;
     border-radius: 5px;
@@ -130,9 +130,11 @@ button{
     float: left;
     width: 50%;
     padding: 10px;
+    display: flex;
     position: auto;
     border: 10px;
     border-right-color: black;
+    align-content: center;
 }
 #info{
     font-family: Verdana;
@@ -144,8 +146,7 @@ button{
     padding: 10px;
     display: flex;
     position: auto;
-    align-items: center;
-    justify-content: center;
+    align-content: center;
 }
 #speedtest{
     justify-content: center;
@@ -297,14 +298,15 @@ button{
 <img id="legend" src="{% static 'legendcolor.png' %}" />
 </div>
 
-<div id="info">
+
+<div id="graphinfo">
+
 <h3 id=graphtitle>Bandwidth <br> usage %: </h3> 
 {% block graphs%}
 {% endblock graphs%}
 
-<!-- <iframe id="speedtest" width="100%" height="600px" frameborder="0" src="http://sandprairie.speedtestcustom.com">Speed Test</iframe> -->
-
 </div>
+<br>
 
 
 {% block plugged %}

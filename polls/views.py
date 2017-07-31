@@ -12,16 +12,14 @@ import math
 
 def index(request):
     template = loader.get_template('polls/index.html')
-    context = {
-        "words": "Here are some words for you"
-    }
+    context = {}
     return HttpResponse(template.render(context, request))
 
 
 def main(request):
     template = loader.get_template('polls/main.html')
     context = {}
-    return HttpResponse(template.render(context,request))
+    return HttpResponse(template.render(context, request))
 
 
 def status(request):
@@ -29,19 +27,21 @@ def status(request):
     if request.method == 'GET':
         global IP
         IP = request.GET.get('IP')
-    loginurl = "http://{0}/login.cgi".format(IP)
-    statusurl = "http://{0}/status.cgi".format(IP)
+    loginurl = "http://{0}/login.cgi".format(IP) #login page variable
+    statusurl = "http://{0}/status.cgi".format(IP) #destination page variable
     auth = {'username': (None, 'ubnt'), 'password': (None, 'access')} #authenticate page
-    get1 = requests.get(loginurl)
-    post = requests.post(loginurl, files = auth, cookies = get1.cookies)
+    get1 = requests.get(loginurl) #retrieve page
+    post = requests.post(loginurl, files = auth, cookies = get1.cookies) #set cookies for password
     json2Dict = json.loads(requests.get(statusurl, cookies = get1.cookies).content) #format the contents as a json object
     wireless = json2Dict["wireless"] #get specific elements from the json 
-    host = json2Dict["host"]
+    host = json2Dict["host"] # create variable for easy access to specific dict element
+
+    # look for cpuload key and stick value into a dictionary (myKey)
     if "cpuload" in host:
         myKey["cpuload"] = int(host["cpuload"])
     else:
         myKey["cpuload"] = False
-    for key, value in wireless.items():
+    for key, value in wireless.items(): # (same for distance)
         if key == "distance":
             dis = value /1609.34 #convert to miles from meters
             myKey[key] = "About " + str(round(dis, 2)) + " miles"

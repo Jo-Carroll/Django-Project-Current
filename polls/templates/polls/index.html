@@ -10,6 +10,7 @@
 
 {% block script1 %}
 
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script src="{% static 'flot/excanvas.min.js' %}"></script>
@@ -21,20 +22,22 @@
 
  
 <script>
-
+// setting up the auto-refresh functions
 $(function() {
     startRefresh();
     secondaryRefresh();
 });
 
+// functions seen below are priority, are are refreshed faster than the ones in the startrefresh below
 function startRefresh() {
     setTimeout(startRefresh, 10000);
     sig();  // signal strength
-    baz();  // uptime
+    uptime();  // uptime
     cpu();  //cpu usage
     eth0(); // LAN0 plugged in or not
 };
 
+// updated less frequently
 function secondaryRefresh() {
     setTimeout(secondaryRefresh, 100000);
     pack(); //package data (powerlink, etc...)
@@ -43,6 +46,7 @@ function secondaryRefresh() {
     plex(); //determine if there is a physical malfunction
 };
 
+// distance from tower
 function dis() {
     var data = $.ajax({
     url:"/status/",
@@ -56,8 +60,8 @@ function dis() {
     }});
 }
 
+// signal strength
 var signals = ""
-
 function sig() {
     
     var data = $.ajax({
@@ -90,6 +94,8 @@ function sig() {
         }
     }});
 }
+
+// cpu load percentage
 var CPUs = ""
 function cpu() {
     var data = $.ajax({
@@ -141,6 +147,8 @@ function cpu() {
         }}
     }});
 }
+
+// parsing package details from customer name
 function pack() {
     var data = $.ajax({
     url:"/package/",
@@ -168,7 +176,8 @@ function pack() {
     }});
 }
 
-function baz() {
+// CPE uptime
+function uptime() {
       var data = $.ajax(
         {url:"/rates/",
         type: "GET",
@@ -188,7 +197,7 @@ function baz() {
 
 </script>
 
-
+<!-- making placeholders for all above funtions -->
 <div1 id="hostname" title="This is the customer's name" name="dev">Loading customer name...</div1> <br>
 <div3 id="signal"   title="A good signal strength is anywhere below 70" name="dev">Loading signal strength...</div3> <br>
 <div4 id="uptime"   title=" If the CPE has not been rebooted in the last 24 hours, ask them to reboot" name="dev">Loading CPE uptime...</div4> <br>
@@ -196,10 +205,6 @@ function baz() {
 <div5 id="package"  name="dev">Loading package details...</div5><br>
 <div6 id="cpuload" class="basic" name="dev">Loading CPU details...</div6><br>
 <div2 id="distance" title="Distance in miles from the connected tower" name="dev">Loading distance from tower...</div2> <br>
-
-    
-
-
 
 
 {% endblock script1 %}
@@ -217,14 +222,15 @@ function baz() {
 
 <script>
 
+// this is the network usage graph
 $(function() {
-
 		var data = [];
-			totalPoints = 100;
+		var totalPoints = 100;
         var currentTX;
         var current;
         var mar
-    
+
+// put my ajax into a variable
 function ajay(){
     $.ajax({
        url:"/rates/",
@@ -243,75 +249,84 @@ function ajay(){
        lastTX = jdata.TX
 
 }})}
+
+// manipulate data retrieved in ajax to be meaningful (convert to bits, get data *rate)
 function GetData() {
     ajay()
-
+    // prevent graph from compressing
     if (data.length > 0)
     data = data.slice(1);
     while (data.length < totalPoints) {
-    data.push(currentTX * 8 / 3072);} 
-    var res = [];
-    for (var i = 0; i < data.length; ++i) {
-        res.push([i, data[i]])
+        //convert to bits
+        data.push(currentTX * 8 / 3072);} 
+        var res = [];
+        // put consecutive rates into an array until it is full
+        for (var i = 0; i < data.length; ++i) {
+            res.push([i, data[i]])
     }
 	return res;
 }
 
-		var updateInterval = 1200;
-		$("#updateInterval").val(updateInterval).change(function () {
-			var v = $(this).val();
-			if (v && !isNaN(+v)) {
-				updateInterval = +v;
-				if (updateInterval < 1) {
-					updateInterval = 1;
-				} else if (updateInterval > 2500) {
-					updateInterval = 2500;
-				}
-				$(this).val("" + updateInterval);
-			}
-		});
-        
-        //graph options
-        var options = {
-			series: {
-				shadowSize: 0,	// Drawing is faster without shadows
-				lines: {
-					show:true,
-					linewidth:1.2,
-					fill:true,
-                    color: "red"
-				}
-			},
-            color: "#f00",
-			yaxis: {
-				min: 0,
-                max: 100
-			},
-			xaxis: {
-				show: false
-			},
-            legend: {        
-            }
-            }
-
-        //create plot
-		var plot = $.plot("#placeholder", [ GetData() ], options);
-
-        function bord(){
-            document.getElementById("info").style.borderColor = "yellowgreen"
+// set update speed
+var updateInterval = 1200;
+$("#updateInterval").val(updateInterval).change(function () {
+    var v = $(this).val();
+    if (v && !isNaN(+v)) {
+        updateInterval = +v;
+        if (updateInterval < 1) {
+            updateInterval = 1;
+        } else if (updateInterval > 2500) {
+            updateInterval = 2500;
         }
+        $(this).val("" + updateInterval);
+    }
+});
 
-		function update() {
-			plot.setData([GetData()]);
-			plot.draw();
-			setTimeout(update, updateInterval);
-            setTimeout(bord,6000)
-		}
-		update();
-		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
-	});
+//graph options
+var options = {
+    series: {
+        shadowSize: 0,
+        lines: {
+            show:true,
+            linewidth:1.2,
+            fill:true,
+            color: "red"
+        }
+    },
+    color: "#f00",
+    yaxis: {
+        min: 0,
+        max: 100
+    },
+    xaxis: {
+        show: false
+    },
+    legend: {        
+    }
+    }
+
+//create placeholder variable for use in html
+var plot = $.plot("#placeholder", [ GetData() ], options);
+
+// set base bordercolor after a setTimeout, so loading bordercolor is grey
+function bord(){
+    document.getElementById("graphinfo").style.borderColor = "yellowgreen"
+}
+
+// draw the graph with given data
+function update() {
+    plot.setData([GetData()]);
+    plot.draw();
+    setTimeout(update, updateInterval);
+    setTimeout(bord,6000)
+}
+update();
+$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+});
 
 </script>
+
+<!-- graph placeholder -->
 <div id="placeholder" ></div> <br>
 
 {% endblock graphs%}
@@ -320,6 +335,7 @@ function GetData() {
 {% block plugged %}
 
 <script>
+// this function checks to see if the CPE is plugged in
 var pluggs = ""
 function eth0(){
     $.ajax({
@@ -329,13 +345,15 @@ function eth0(){
        data: {IP: new URLSearchParams(window.location.search).get("IP")},
        beforeSend: function(data, settings) {},
        success: function(jdata){
+           // only get plugged data once or if it changes
            if (pluggs == ""){
             if(jdata.eth == 0){ 
                 pluggs = "&#9755 Make sure POE is plugged in correctly, check cable ends for blackening, water, and poor pin contact <br>"
-                document.getElementById("wisdom").innerHTML += pluggs
+                document.getElementById("wisdom").innerHTML += pluggs // add this output to the netwizard
                 }
             }
-           if (jdata.eth == 1){
+            // we are given a bool to checked plugged or no
+            if (jdata.eth == 1){
                document.getElementById("eth0").innerHTML = "CPE is plugged in"
                document.getElementById("eth0").style.borderColor = "green"
            }
@@ -346,6 +364,7 @@ function eth0(){
        
 }})
 }
+// this function checks to see if the CPE is enabled (late bill payment)
 var enabs = ""
 function enabled(){
     $.ajax({
@@ -358,7 +377,7 @@ function enabled(){
            if (enabs == ""){
             if(jdata.enabled == false){ 
                 enabs = "&#9755 Make sure customer is current on bill payments <br>"
-                document.getElementById("wisdom").innerHTML += enabs
+                document.getElementById("wisdom").innerHTML += enabs // add function output to the netwizard
                 }
             }
            if (jdata.enabled == true){
@@ -371,6 +390,8 @@ function enabled(){
            }   
     }})
 }
+
+//check duplex value for physical malfunctions
 malfs = ""
 function plex(){
     $.ajax({
@@ -383,7 +404,7 @@ function plex(){
            if (malfs == ""){
             if(jdata.plex == false){ 
                 malfs = "&#9755 Physical malfunction: bad cable, bad POE, bad antennae are all possibilities <br>"
-                document.getElementById("wisdom").innerHTML += malfs
+                document.getElementById("wisdom").innerHTML += malfs // add function output to the netwizard
                 }
             }
             else if(jdata.plex == true){
@@ -404,7 +425,7 @@ function plex(){
 </script>
 
 <div id="eth0" title="Determine if the equipment is actually plugged in" name="dev">
-Loading CPE power status...
+Loading CPE power status... 
 </div> <br>
 <div id="enabled" title="Determine if the equipment is enabled" name="dev">
 Loading CPE enabled state...
